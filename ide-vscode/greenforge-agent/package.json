@@ -1,0 +1,46 @@
+{
+  "name": "greenforge-agent",
+  "displayName": "GreenForge Agent",
+  "description": "AI agent sidebar for GreenForge NEXUS - creates files from natural language commands",
+  "version": "1.0.0",
+  "publisher": "greenforge",
+  "engines": {
+    "vscode": "^1.89.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:greenforgeAgentView"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "greenforge-agent-container",
+          "title": "GreenForge Agent",
+          "icon": "$(comment-discussion)"
+        }
+      ]
+    },
+    "views": {
+      "greenforge-agent-container": [
+        {
+          "type": "webview",
+          "id": "greenforgeAgentView",
+          "name": "GreenForge Agent"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.89.0",
+    "typescript": "^5.4.0"
+  }
+}
