@@ -1,0 +1,6 @@
+{
+  "name": "Minimal Node Server",
+  "description": "An absolutely minimal Node.js HTTP server container designed for manual OpenVSCode Server extraction and execution.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

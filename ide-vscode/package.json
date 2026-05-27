@@ -1,0 +1,11 @@
+{
+  "name": "minimal-node-server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node index.js",
+    "build": "echo 'No build step required' && exit 0",
+    "start": "node index.js"
+  },
+  "dependencies": {}
+}
