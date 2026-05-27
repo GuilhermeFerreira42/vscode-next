@@ -1,0 +1,281 @@
+```json
+{
+  "meta": {
+    "id": "CP-20260527-1900",
+    "created_at": "2026-05-27T19:00:00-03:00",
+    "source": "Integração de agente de IA customizado no OpenVSCode Server",
+    "domain": "software",
+    "summary": "Integrar sistema de agente GreenForge em OpenVSCode Server rodando no Google AI Studio via extensão VS Code customizada.",
+    "attached_files": [
+      "01-vision-and-architecture.md",
+      "02-functional-requirements.md",
+      "03-technical-spec-and-data.md",
+      "04-operational-playbooks.md",
+      "05-governance-and-security.md",
+      "06-api-and-extensibility.md",
+      "07-visual-identity-and-layout-specs.md",
+      "08-motion-grammar-and-dynamic-states.md",
+      "09-hardening-deterministic-contracts.md",
+      "README.md",
+      "CHANGELOG_HARDENING.md"
+    ]
+  },
+  "objective": {
+    "goal": "Criar um painel lateral de chat dentro do OpenVSCode Server que recebe ordens do usuário, processa via Gemini, e cria ou modifica arquivos no workspace automaticamente.",
+    "non_goals": [
+      "Interface de diff before/after",
+      "UI customizada do zero",
+      "Autenticação e multiusuário",
+      "Billing e controle de quota",
+      "Recompilar o OpenVSCode Server"
+    ],
+    "success_criteria": [
+      "Usuário digita uma ordem no painel lateral da IDE",
+      "Agente processa usando Gemini via GEMINI_API_KEY já disponível no ambiente",
+      "Arquivo é criado ou modificado no workspace automaticamente sem copy/paste"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "D-001",
+      "what": "Usar extensão VS Code customizada (.vsix) como método de integração",
+      "why": "Não exige recompilar o servidor e funciona com o binário pré-compilado.",
+      "alternatives_rejected": [
+        "Patch direto no core do servidor (exige recompilação)",
+        "Chat Participant via Proposed API (risco de incompatibilidade com o binário)"
+      ],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-002",
+      "what": "Usar Webview Panel como interface do chat lateral, não chatParticipants API",
+      "why": "Webview usa API estável do VS Code sem depender de Proposed APIs experimentais.",
+      "alternatives_rejected": [
+        "chatParticipants Proposed API (incerta no binário pré-compilado)"
+      ],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-003",
+      "what": "Subir servidor Express interno na porta 4000 dentro do mesmo index.js",
+      "why": "Apenas porta 3000 é exposta externamente, mas portas internas são acessíveis entre processos no mesmo container.",
+      "alternatives_rejected": [
+        "Lógica toda dentro da extensão sem servidor separado (menos organizado para evoluir)"
+      ],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-004",
+      "what": "Usar process.env.GEMINI_API_KEY injetada automaticamente pelo Google AI Studio",
+      "why": "A chave já está disponível no ambiente sem configuração adicional.",
+      "alternatives_rejected": [
+        "Hardcodar chave nos arquivos",
+        "Criar sistema próprio de secrets"
+      ],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-005",
+      "what": "Instalar extensão copiando pasta para /root/.openvscode-server/extensions e reiniciando",
+      "why": "É o método nativo de instalação local sem marketplace no OpenVSCode Server.",
+      "alternatives_rejected": [
+        "Publicar no marketplace",
+        "Usar flag --install-extension com .vsix"
+      ],
+      "reversible": true,
+      "confidence": "high"
+    }
+  ],
+  "facts": [
+    {
+      "id": "F-001",
+      "statement": "OpenVSCode Server v1.109.5-linux-x64 está rodando em container Debian 12 no Google AI Studio (Cloud Run)",
+      "source": "Google AI Studio via inspeção do ambiente",
+      "verified": true
+    },
+    {
+      "id": "F-002",
+      "statement": "Apenas a porta 3000 é exposta externamente via proxy reverso do Cloud Run",
+      "source": "Google AI Studio via inspeção do ambiente",
+      "verified": true
+    },
+    {
+      "id": "F-003",
+      "statement": "Node.js v22.22.2 e npm 10.9.7 estão disponíveis no ambiente",
+      "source": "Google AI Studio via node --version e npm --version",
+      "verified": true
+    },
+    {
+      "id": "F-004",
+      "statement": "GEMINI_API_KEY é injetada automaticamente pelo AI Studio via variáveis de ambiente",
+      "source": ".env.example do projeto",
+      "verified": true
+    },
+    {
+      "id": "F-005",
+      "statement": "npm install funciona sem restrições no ambiente",
+      "source": "Google AI Studio via teste de instalação do express",
+      "verified": true
+    },
+    {
+      "id": "F-006",
+      "statement": "Requisições HTTPS de saída para generativelanguage.googleapis.com funcionam sem firewall",
+      "source": "Google AI Studio via teste de curl",
+      "verified": true
+    },
+    {
+      "id": "F-007",
+      "statement": "Diretório de extensões está em /root/.openvscode-server/extensions",
+      "source": "Google AI Studio via inspeção do filesystem",
+      "verified": true
+    },
+    {
+      "id": "F-008",
+      "statement": "O index.js é o único entrypoint, chamado via npm run start pelo AI Studio",
+      "source": "package.json do projeto",
+      "verified": true
+    },
+    {
+      "id": "F-009",
+      "statement": "Não há extensões de IA ou Copilot pré-instaladas, apenas ms-ceintl language pack pt-br",
+      "source": "Google AI Studio via ls /root/.openvscode-server/extensions",
+      "verified": true
+    },
+    {
+      "id": "F-010",
+      "statement": "O workspace tem permissão total de root e filesystem não é read-only",
+      "source": "Google AI Studio via inspeção do ambiente",
+      "verified": true
+    },
+    {
+      "id": "F-011",
+      "statement": "APP_URL também é injetada automaticamente pelo AI Studio com a URL do Cloud Run",
+      "source": ".env.example do projeto",
+      "verified": true
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C-001",
+      "rule": "Não recompilar o OpenVSCode Server",
+      "reason": "Processo demorado e arriscado com binário pré-compilado.",
+      "negotiable": false
+    },
+    {
+      "id": "C-002",
+      "rule": "Toda comunicação externa deve passar pela porta 3000",
+      "reason": "É a única porta exposta pelo proxy reverso do Cloud Run.",
+      "negotiable": false
+    },
+    {
+      "id": "C-003",
+      "rule": "Não construir UI do zero",
+      "reason": "MVP deve reaproveitar o máximo do que já existe na IDE.",
+      "negotiable": false
+    },
+    {
+      "id": "C-004",
+      "rule": "Minimizar uso de tokens de IA cara (Claude) para tarefas de implementação braçal",
+      "reason": "Limitação de créditos do usuário.",
+      "negotiable": false
+    },
+    {
+      "id": "C-005",
+      "rule": "Estado do filesystem fora do workspace é efêmero e não persiste entre restarts do container",
+      "reason": "Limitação da infraestrutura Cloud Run do Google AI Studio.",
+      "negotiable": false
+    }
+  ],
+  "open_items": [
+    {
+      "id": "O-001",
+      "question": "A lógica de orquestração do GreenForge (debate adversarial, gates HITL) será integrada no MVP ou o MVP usa apenas Gemini direto?",
+      "context": "A documentação do GreenForge está pronta mas a orquestração não foi implementada ainda.",
+      "blocking": false,
+      "suggested_next_step": "Para o MVP usar Gemini direto; orquestração completa entra na próxima fase."
+    },
+    {
+      "id": "O-002",
+      "question": "Como garantir que a extensão e o servidor Express interno sobrevivam a um restart do container sem reconfiguração manual?",
+      "context": "O filesystem fora do workspace é efêmero, então a extensão precisa ser instalada programaticamente no boot.",
+      "blocking": true,
+      "suggested_next_step": "O index.js deve incluir script de instalação automática da extensão antes de subir o servidor."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "A-001",
+      "name": "Documentação GreenForge NEXUS v2.3",
+      "type": "documento",
+      "status": "final",
+      "location": "Arquivos anexados ao contexto (01 ao 09 + README + CHANGELOG)",
+      "summary": "Especificação completa da arquitetura de agente com debate adversarial, gates HITL e hardening de segurança."
+    },
+    {
+      "id": "A-002",
+      "name": "index.js atual do projeto",
+      "type": "código",
+      "status": "draft",
+      "location": "Raiz do projeto no Google AI Studio",
+      "summary": "Faz spawn do OpenVSCode Server na porta 3000, precisa ser expandido para também subir Express na porta 4000."
+    },
+    {
+      "id": "A-003",
+      "name": "Estrutura da extensão VS Code customizada",
+      "type": "plano",
+      "status": "draft",
+      "location": "Decidida nessa conversa, ainda não criada",
+      "summary": "Extensão com Webview Panel que exibe chat lateral e conecta ao Express interno para processar com Gemini."
+    }
+  ],
+  "current_state": {
+    "where_we_stopped": "Ambiente completamente mapeado e arquitetura decidida. Próximo passo é escrever os arquivos de código.",
+    "next_actions": [
+      "Expandir index.js para subir Express na porta 4000 com rota POST /agent que chama Gemini",
+      "Criar pasta da extensão com package.json, extension.ts e tsconfig.json",
+      "Adicionar no index.js instalação automática da extensão em /root/.openvscode-server/extensions no boot",
+      "Compilar extensão com tsc e testar no ambiente"
+    ],
+    "blockers": [
+      "Extensão precisa ser reinstalada a cada restart do container pois /root não persiste — resolver via script de boot no index.js"
+    ]
+  },
+  "glossary": [
+    {
+      "term": "OpenVSCode Server",
+      "meaning": "Versão web do VS Code que roda como servidor HTTP, aqui na versão pré-compilada v1.109.5-linux-x64"
+    },
+    {
+      "term": "Webview Panel",
+      "meaning": "API estável do VS Code que permite embutir HTML/JS customizado num painel lateral da IDE"
+    },
+    {
+      "term": "Express interno",
+      "meaning": "Servidor HTTP Node.js rodando na porta 4000, acessível apenas dentro do container, que orquestra chamadas ao Gemini"
+    },
+    {
+      "term": "GEMINI_API_KEY",
+      "meaning": "Chave da API do Google Gemini injetada automaticamente pelo Google AI Studio via variável de ambiente"
+    },
+    {
+      "term": "GreenForge NEXUS",
+      "meaning": "Sistema de agente de IA do usuário com debate adversarial e gates de aprovação, documentado nos arquivos anexos"
+    },
+    {
+      "term": "Gate HITL",
+      "meaning": "Human In The Loop — ponto de aprovação obrigatória do usuário antes de o agente executar uma ação"
+    }
+  ],
+  "people_and_roles": [
+    {
+      "name": "Usuário",
+      "role": "Product Owner e arquiteto do GreenForge",
+      "preferences": "Prosa fluida sem markdown, delega implementação braçal para Qwen/outros modelos, usa Claude para análise e decisões arquiteturais"
+    }
+  ]
+}
+```
