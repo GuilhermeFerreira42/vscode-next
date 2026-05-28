@@ -1,0 +1,980 @@
+============================================================
+  COPIADOR DE CÓDIGO AVANÇADO v2.0
+============================================================
+  Data/Hora    : 2026-05-28 17:40:11
+  Origem       : Arquivos Avulsos
+  Total arquivos: 4
+============================================================
+
+==========================================
+Conteúdo de contexto (1).json (caminho original: C:\Users\Usuario\Downloads\contexto (1).json) [enc: utf-8]:
+==========================================
+{
+  "meta": {
+    "id": "CP-20260528-0911",
+    "created_at": "2026-05-28T09:11:00-03:00",
+    "source": "Integração de agente GreenForge no OpenVSCode Server - falha no botão e rejeição do /chat como solução",
+    "domain": "software",
+    "summary": "Agente não funciona dentro da IDE. /chat funciona mas não valida proposta."
+  },
+  "objective": {
+    "goal": "Fazer um agente de IA com orquestração própria (debate adversarial, gates HITL) executar comandos dentro de uma IDE web e modificar arquivos automaticamente.",
+    "non_goals": [
+      "Construir uma IDE do zero",
+      "Recompilar o OpenVSCode Server",
+      "Interface de diff before/after no MVP"
+    ],
+    "success_criteria": [
+      "Usuário digita ordem no chat da IDE",
+      "Agente processa via Gemini com lógica de orquestração própria",
+      "Arquivo criado ou modificado no workspace da IDE sem copy/paste"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "D-001",
+      "what": "Usar OpenVSCode Server pré-compilado como base da IDE",
+      "why": "Evita construir uma IDE do zero e já tem terminal, editor, file explorer.",
+      "alternatives_rejected": ["Construir IDE do zero"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-002",
+      "what": "Rejeitar solução de chat via /chat em página separada",
+      "why": "Funciona mas não valida o agente dentro da IDE, apenas como chat comum.",
+      "alternatives_rejected": ["Manter /chat como solução final"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-003",
+      "what": "Considerar Bolt.dy como alternativa ao OpenVSCode Server",
+      "why": "O Bolt.dy já tem integração nativa com LLM e conceito de agente que escreve arquivos.",
+      "alternatives_rejected": ["Continuar tentando resolver no OpenVSCode Server", "Theia"],
+      "reversible": true,
+      "confidence": "medium"
+    }
+  ],
+  "facts": [
+    {
+      "id": "F-001",
+      "statement": "A extensão GreenForge Agent aparece visualmente na barra lateral do OpenVSCode Server",
+      "source": "Vídeos do usuário",
+      "verified": true
+    },
+    {
+      "id": "F-002",
+      "statement": "O botão Enviar da extensão não funciona e não exibe erro visível",
+      "source": "Vídeos do usuário",
+      "verified": true
+    },
+    {
+      "id": "F-003",
+      "statement": "O log do browser mostra: The web worker extension host is started in a same-origin iframe",
+      "source": "Console do navegador",
+      "verified": true
+    },
+    {
+      "id": "F-004",
+      "statement": "Adicionar extensionKind: workspace no package.json não resolveu o problema",
+      "source": "Teste no Google AI Studio após correção",
+      "verified": true
+    },
+    {
+      "id": "F-005",
+      "statement": "A rota /chat no Express funciona perfeitamente e consegue chamar /api/agent e criar arquivos",
+      "source": "Teste do usuário no Google AI Studio",
+      "verified": true
+    },
+    {
+      "id": "F-006",
+      "statement": "O usuário rejeitou a solução /chat por não validar o agente dentro da IDE",
+      "source": "Mensagem final do usuário",
+      "verified": true
+    },
+    {
+      "id": "F-007",
+      "statement": "O Bolt.dy já tem integração com LLM e conceito de agente no core",
+      "source": "Conhecimento prévio do usuário",
+      "verified": false
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C-001",
+      "rule": "Não construir uma IDE do zero",
+      "reason": "Esforço colossal, inviável para validação de MVP.",
+      "negotiable": false
+    },
+    {
+      "id": "C-002",
+      "rule": "O MVP precisa validar o agente funcionando dentro da IDE, não em página separada",
+      "reason": "A proposta de valor é o agente integrado à IDE, não um chat comum.",
+      "negotiable": false
+    },
+    {
+      "id": "C-003",
+      "rule": "Não recompilar o OpenVSCode Server",
+      "reason": "Processo demorado e arriscado com binário pré-compilado.",
+      "negotiable": true
+    }
+  ],
+  "open_items": [
+    {
+      "id": "O-001",
+      "question": "Qual é exatamente o escopo da validação que o usuário precisa com o MVP?",
+      "context": "Dependendo da resposta, o Bolt.dy pode ser o caminho mais curto ou trazer os mesmos problemas.",
+      "blocking": true,
+      "suggested_next_step": "Usuário precisa responder se o coração da validação é o agente editar arquivos, o debate adversarial, ou os gates HITL."
+    },
+    {
+      "id": "O-002",
+      "question": "O Bolt.dy tem suporte a extensões customizadas ou exige fork do código fonte para substituir o provedor de LLM?",
+      "context": "Isso define o esforço de adaptação da lógica do GreenForge.",
+      "blocking": true,
+      "suggested_next_step": "Pesquisar documentação do Bolt.dy e verificar se permite provedor de LLM customizado via plugin ou se exige fork."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "A-001",
+      "name": "Extensão GreenForge Agent",
+      "type": "código",
+      "status": "draft",
+      "location": "/app/applet/extensions/greenforge-agent no Google AI Studio",
+      "summary": "Extensão VS Code com Webview Panel que tenta chamar /api/agent — botão não funciona por limitação do web worker mesmo após extensionKind."
+    },
+    {
+      "id": "A-002",
+      "name": "Rota /chat do Express",
+      "type": "código",
+      "status": "final",
+      "location": "index.js no Google AI Studio",
+      "summary": "Página HTML de chat que funciona perfeitamente mas foi rejeitada por não estar dentro da IDE."
+    }
+  ],
+  "current_state": {
+    "where_we_stopped": "Usuário rejeitou a solução /chat por não validar o agente dentro da IDE. OpenVSCode Server com extensão continua travado no web worker. Usuário propôs migrar para Bolt.dy como alternativa.",
+    "next_actions": [
+      "Usuário precisa definir o escopo exato da validação (agente editar arquivos vs debate adversarial vs gates HITL)",
+      "Pesquisar se Bolt.dy aceita provedor de LLM customizado ou exige fork",
+      "Comparar esforço entre continuar no OpenVSCode Server vs migrar para Bolt.dy",
+      "Tomar decisão sobre qual IDE manter"
+    ],
+    "blockers": [
+      "O OpenVSCode Server neste build específico não consegue rodar a extensão no servidor (web worker persistente)",
+      "Usuário não aceita soluções que não validem o agente dentro da IDE",
+      "O escopo exato da validação ainda não está claro"
+    ]
+  },
+  "glossary": [
+    {
+      "term": "web worker extension host",
+      "meaning": "Modo do VS Code Web onde extensões rodam no browser sem acesso à rede local"
+    },
+    {
+      "term": "gate HITL",
+      "meaning": "Human In The Loop — ponto de aprovação obrigatória do usuário antes do agente executar uma ação"
+    },
+    {
+      "term": "Bolt.dy",
+      "meaning": "Ferramenta open source com agente de IA integrado à IDE, mencionada como alternativa ao OpenVSCode Server"
+    }
+  ],
+  "people_and_roles": [
+    {
+      "name": "Usuário",
+      "role": "Product Owner do GreenForge",
+      "preferences": "Prosa fluida sem markdown, delega implementação para outros modelos (Qwen, Google AI Studio), usa Claude para análise e decisões, limitação de créditos, rejeita soluções que não validam a proposta central"
+    }
+  ]
+}
+
+==========================================
+Conteúdo de contexto (2).json (caminho original: C:\Users\Usuario\Downloads\contexto (2).json) [enc: utf-8]:
+==========================================
+{
+  "meta": {
+    "id": "LE-20260528-0911",
+    "created_at": "2026-05-28T09:11:00-03:00",
+    "topic": "Experiência com OpenVSCode Server no Google AI Studio para integração de agente IA",
+    "summary": "Aprendizados sobre o que funcionou e não funcionou na tentativa de rodar uma extensão VS Code com agente dentro do ambiente do Google AI Studio."
+  },
+  "what_worked": [
+    {
+      "id": "W-001",
+      "item": "Express proxy reverso na porta 3000 com rota /api/agent",
+      "description": "Servidor Express interno na porta 4000 com proxy para /api/agent na porta 3000 funcionou perfeitamente.",
+      "evidence": "curl para localhost:3000/api/agent retornou JSON correto com message, filePath e content."
+    },
+    {
+      "id": "W-002",
+      "item": "Chamada à API do Gemini",
+      "description": "A integração com Gemini via SDK oficial funcionou dentro do container, usando GEMINI_API_KEY injetada pelo AI Studio.",
+      "evidence": "Respostas da API geraram conteúdo de arquivo válido."
+    },
+    {
+      "id": "W-003",
+      "item": "Criação de arquivos no workspace via API do VS Code (dentro da extensão, quando executada no servidor)",
+      "description": "A lógica de vscode.workspace.fs.writeFile funciona quando a extensão roda no Extension Host do servidor.",
+      "evidence": "A rota /chat chamando /api/agent criou arquivos no workspace, provando que o backend está correto."
+    },
+    {
+      "id": "W-004",
+      "item": "Interface Webview Panel da extensão",
+      "description": "O painel lateral com HTML customizado aparece na barra lateral do VS Code Web.",
+      "evidence": "Ícone e painel do GreenForge Agent ficaram visíveis após instalação e F5."
+    },
+    {
+      "id": "W-005",
+      "item": "Página de chat standalone (/chat)",
+      "description": "Rota GET /chat servindo HTML puro com fetch relativo para /api/agent funcionou sem restrições de CSP ou CORS.",
+      "evidence": "Teste manual confirmou que o chat envia comandos e cria arquivos no workspace."
+    },
+    {
+      "id": "W-006",
+      "item": "Persistência de extensões usando --extensions-dir apontando para /app/applet/extensions",
+      "description": "Flag --extensions-dir evita que extensões sejam perdidas no restart do container efêmero.",
+      "evidence": "Extensão continuou instalada após reinicializações."
+    },
+    {
+      "id": "W-007",
+      "item": "Uso de curl para validar backend",
+      "description": "Testes via curl dentro do container foram rápidos e eficazes para isolar problemas de rede.",
+      "evidence": "Confirmou que /api/agent estava funcionando enquanto a extensão não."
+    }
+  ],
+  "what_did_not_work": [
+    {
+      "id": "F-001",
+      "item": "Botão Enviar da extensão no painel Webview",
+      "description": "O clique no botão não dispara nenhuma ação, não há erro visível.",
+      "root_cause": "A extensão roda no modo web worker (browser) e fetch para localhost é bloqueado pelo sandbox e CSP.",
+      "evidence": "Log do console: 'The web worker extension host is started in a same-origin iframe'."
+    },
+    {
+      "id": "F-002",
+      "item": "Forçar extensão a rodar no servidor via extensionKind: workspace",
+      "description": "Adicionar \"extensionKind\": [\"workspace\"] no package.json causou tela de carregamento infinita na IDE.",
+      "root_cause": "Contradição entre manifesto (campo browser ausente? ou build específico do OpenVSCode Server) e runtime do Google AI Studio.",
+      "evidence": "Vídeo do usuário mostrando travamento após aplicar a mudança."
+    },
+    {
+      "id": "F-003",
+      "item": "Uso de fetch direto da Webview para localhost",
+      "description": "Qualquer tentativa de fetch da Webview para localhost:4000 ou :3000 foi bloqueada silenciosamente.",
+      "root_cause": "Webview em web worker tem restrições de origem cruzada (CORS) e CSP.",
+      "evidence": "Nenhum erro visível, mas o botão não funciona; a alternativa /chat com fetch relativo funciona."
+    },
+    {
+      "id": "F-004",
+      "item": "Extensão rodar no Extension Host do servidor no OpenVSCode Server do Google AI Studio",
+      "description": "Todas as tentativas resultaram na extensão sempre sendo executada como web worker, nunca como processo Node.js.",
+      "root_cause": "Possivelmente a versão pré-compilada do OpenVSCode Server no Cloud Run não suporta ou desabilita o Extension Host remoto para extensões web.",
+      "evidence": "Persistência do log 'web worker extension host' mesmo após correções no manifesto."
+    },
+    {
+      "id": "F-005",
+      "item": "Instalação automática da extensão via script de boot",
+      "description": "A lógica no index.js que copia a extensão para o diretório de extensões funcionou, mas a extensão continuou como web worker.",
+      "root_cause": "O problema não é instalação, é runtime da extensão.",
+      "evidence": "Extensão apareceu no diretório e foi ativada, mas no modo errado."
+    }
+  ],
+  "key_insights": [
+    {
+      "id": "I-001",
+      "insight": "O Google AI Studio (Cloud Run) impõe restrições de runtime para extensões VS Code que não existem em um ambiente local. O Extension Host do servidor não está acessível para extensões web neste setup específico.",
+      "implication": "Para fazer uma extensão funcionar, é necessário que a extensão seja puramente web (sem necessidade de rede) ou que se use um workaround como /chat separado."
+    },
+    {
+      "id": "I-002",
+      "insight": "O proxy reverso unificado na porta exposta (3000) é uma arquitetura robusta que funciona para qualquer frontend que faça chamadas relativas (mesma origem).",
+      "implication": "Essa arquitetura pode ser reutilizada em outras IDE web ou até mesmo em um frontend customizado."
+    },
+    {
+      "id": "I-003",
+      "insight": "Validar o backend via curl antes de testar na interface economiza horas de debugging.",
+      "implication": "Sempre testar endpoints independentemente da UI."
+    },
+    {
+      "id": "I-004",
+      "insight": "A solução /chat funciona perfeitamente do ponto de vista técnico, mas não valida a proposta de negócio de um agente dentro da IDE.",
+      "implication": "O MVP precisa equilibrar viabilidade técnica com validação da proposta de valor. Às vezes o caminho tecnicamente mais fácil não é o que o produto exige."
+    },
+    {
+      "id": "I-005",
+      "insight": "O OpenVSCode Server pré-compilado é fácil de implantar, mas oferece pouco controle sobre o runtime das extensões em ambientes restritos como Cloud Run.",
+      "implication": "Para maior controle, pode ser necessário compilar o servidor a partir do fonte ou escolher outra IDE (ex: Bolt.dy, Theia, ou até um fork do VS Code Desktop)."
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "R-001",
+      "recommendation": "Abandonar a abordagem de extensão no OpenVSCode Server neste ambiente específico, pois o runtime de web worker é uma barreira intransponível pelo tempo disponível.",
+      "alternative": "Migrar para Bolt.dy, que já tem suporte nativo a agentes e LLM, ou para uma IDE customizada leve (ex: CodeMirror + terminal xterm.js)."
+    },
+    {
+      "id": "R-002",
+      "recommendation": "Se insistir no OpenVSCode Server, tentar compilar o servidor a partir do código fonte com flags que forcem o Extension Host remoto para todas as extensões, ou usar o VS Code Desktop em modo servidor (code-server).",
+      "effort": "Alto, mas pode ser viável se houver recursos."
+    },
+    {
+      "id": "R-003",
+      "recommendation": "Para validação imediata da lógica de orquestração (debate adversarial, gates HITL), usar o /chat como ferramenta de teste do backend, mesmo que não seja a interface final.",
+      "benefit": "Permite iterar na lógica do agente sem depender da IDE."
+    },
+    {
+      "id": "R-004",
+      "recommendation": "Documentar que a flag --extensions-dir e o proxy reverso são boas práticas para qualquer ambiente containerizado.",
+      "benefit": "Útil para projetos futuros."
+    }
+  ],
+  "environment_notes": {
+    "platform": "Google AI Studio (Cloud Run)",
+    "os": "Debian 12",
+    "node_version": "v22.22.2",
+    "openvscode_server_version": "1.109.5-linux-x64 (pré-compilado)",
+    "exposed_port": "3000",
+    "persistent_directory": "/app/applet",
+    "ephemeral_directory": "/root",
+    "env_vars_injected": ["GEMINI_API_KEY", "APP_URL"]
+  }
+}
+
+==========================================
+Conteúdo de contexto (3).json (caminho original: C:\Users\Usuario\Downloads\contexto (3).json) [enc: utf-8]:
+==========================================
+{
+  "meta": {
+    "id": "CP-GREENFORGE-NEXUS-20260528",
+    "created_at": "2026-05-28T12:00:00Z",
+    "source": "Documentação GreenForge NEXUS v2.3 (9 arquivos + complementos)",
+    "domain": "software",
+    "summary": "GreenForge NEXUS é uma IDE web com protocolo de debate adversarial entre agentes de IA, gates HITL e resiliência determinística."
+  },
+  "objective": {
+    "goal": "Construir uma IDE web de múltiplos agentes onde nenhum código é gerado sem debate entre Propositor e Crítico, e nenhum debate termina sem aprovação humana estruturada.",
+    "non_goals": [
+      "Substituir completamente o VS Code",
+      "Fornecer ambiente multi-usuário no MVP",
+      "Suportar LLMs locais (Ollama) como provedor primário",
+      "Ter interface de diff granular por linha (MVP usa chunk-based)"
+    ],
+    "success_criteria": [
+      "Usuário insere objetivo em linguagem natural e sistema debate até convergência ou impasse",
+      "Gate HITL exibe rationale em 3 camadas antes da aprovação",
+      "Código gerado é aplicado ao worktree e mergeado ao branch principal via squash commit",
+      "Sistema sobrevive a SIGKILL sem perder consistência entre Git e SQLite"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "D-ADR-01",
+      "what": "Backend local (Node.js) em vez de WebContainers",
+      "why": "WebContainers não suportam symlinks (bloqueia git worktree) e SQLite read-only no OPFS.",
+      "alternatives_rejected": ["WebContainers"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-02",
+      "what": "Dual-Transport: SSE para streaming de tokens + WebSocket para terminal/HITL",
+      "why": "SSE tem reconexão nativa via Last-Event-ID e baixa latência para dados unidirecionais.",
+      "alternatives_rejected": ["WebSocket puro", "HTTP polling"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-03",
+      "what": "AGENTS.md como fonte declarativa de agentes (YAML frontmatter + Markdown)",
+      "why": "Permite criar/ajustar agentes sem recompilar o servidor; legível e versionável.",
+      "alternatives_rejected": ["JSON config", "DB-driven"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-04",
+      "what": "SQLite com Prisma (WAL mode) em vez de PostgreSQL",
+      "why": "Zero infra, adequado para MVP single-user, portabilidade total.",
+      "alternatives_rejected": ["PostgreSQL", "MongoDB"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-05",
+      "what": "Rollback via git revert (não git reset --hard)",
+      "why": "Preserva histórico e é seguro para repositórios compartilhados.",
+      "alternatives_rejected": ["git reset --hard"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-06",
+      "what": "Árbitro com Síntese Dialética (não voto majoritário)",
+      "why": "Voto seria trivial com dois agentes; síntese produz raciocínio auditável.",
+      "alternatives_rejected": ["Voto majoritário", "Randomizador"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-07",
+      "what": "Sincronização via SQLite Outbox + Fencing Tokens (epoch_id)",
+      "why": "Persiste eventos antes do envio SSE, garante idempotência e resiliência a crashes.",
+      "alternatives_rejected": ["Estados em memória", "Redis"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-08",
+      "what": "Gestão de contexto via AIS (Anchored Iterative Summarization)",
+      "why": "Previne Context Drift mantendo âncora dialética imutável no prompt.",
+      "alternatives_rejected": ["Compressão linear sem âncora"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-09",
+      "what": "Rollback atômico via Saga (PENDING → GIT_STASHED → COMMITTED)",
+      "why": "Garante atomicidade entre Git e SQLite mesmo sob crash.",
+      "alternatives_rejected": ["Retry simples"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-10",
+      "what": "Segurança de terminal com allowlist hierárquica + sanitização de ambiente",
+      "why": "Previne injection de comandos e env poisoning (CVE-2026-22708).",
+      "alternatives_rejected": ["Sem sanitização"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-11",
+      "what": "Editor CodeMirror 6 em vez de Monaco",
+      "why": "Monaco ContentWidgets desincronizam com React; CM6 usa StateField imutável.",
+      "alternatives_rejected": ["Monaco Editor", "CodeMirror 5"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-12",
+      "what": "BootReconciler com WAL Intent Log (3 fases)",
+      "why": "Resolve estados zumbis após SIGKILL entre git stash e DB commit.",
+      "alternatives_rejected": ["Saga sem log persistido", "Redis WAL"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-ADR-13",
+      "what": "CPGLoopDetector com Execution Oracle",
+      "why": "Detecta loops mesmo quando agente muda paradigma (recursão → iteração).",
+      "alternatives_rejected": ["Somente AST/SimHash"],
+      "reversible": false,
+      "confidence": "high"
+    }
+  ],
+  "facts": [
+    {
+      "id": "F-001",
+      "statement": "O sistema opera sobre dois sistemas de estado heterogêneos: Git filesystem e SQLite DB.",
+      "source": "01-vision-and-architecture §5.3",
+      "verified": true
+    },
+    {
+      "id": "F-002",
+      "statement": "O protocolo de debate adversarial tem três papéis: Propositor, Crítico e Árbitro (Judge).",
+      "source": "01-vision §4.1",
+      "verified": true
+    },
+    {
+      "id": "F-003",
+      "statement": "O primeiro round é sempre paralelo (anti-herding): Propositor e Crítico não veem as respostas um do outro.",
+      "source": "02-functional-requirements §2.2",
+      "verified": true
+    },
+    {
+      "id": "F-004",
+      "statement": "Há três gates HITL: Gate 0 (clarificação socrática), Gate 1 (síntese do árbitro) e Gate 2 (DiffLens chunk-based).",
+      "source": "01-vision §4.3",
+      "verified": true
+    },
+    {
+      "id": "F-005",
+      "statement": "O trabalho de rollback usa `git revert HEAD` (não destrutivo) com janela de 30 minutos.",
+      "source": "02-functional-requirements §2.5",
+      "verified": true
+    },
+    {
+      "id": "F-006",
+      "statement": "O bootReconciler() é a primeira função executada após abrir o banco de dados, antes de qualquer conexão HTTP/SSE.",
+      "source": "03-technical-spec §1.3",
+      "verified": true
+    },
+    {
+      "id": "F-007",
+      "statement": "O CPGLoopDetector usa 60% de peso no Execution Oracle (output de testes), 30% em frequência de tipos de nó AST, 10% em profundidade de controle.",
+      "source": "03-technical-spec §2.8",
+      "verified": true
+    },
+    {
+      "id": "F-008",
+      "statement": "O PreExecutionGuard exige quatro camadas: TTL, HMAC, Worktree Hash e OCC (resourceVersion).",
+      "source": "05-governance-and-security §2.3",
+      "verified": true
+    },
+    {
+      "id": "F-009",
+      "statement": "O secureGit wrapper remove 18 variáveis de ambiente perigosas, incluindo GIT_PAGER, LD_PRELOAD, GIT_CONFIG_COUNT.",
+      "source": "05-governance-and-security §4.3",
+      "verified": true
+    },
+    {
+      "id": "F-010",
+      "statement": "A interface é organizada em grid tripartite fixo: 18% (navegador), 47% (debate), 35% (artefatos).",
+      "source": "07-visual-identity-and-layout-specs §1.1",
+      "verified": true
+    },
+    {
+      "id": "F-011",
+      "statement": "Os headers Cross-Origin-Opener-Policy e Cross-Origin-Embedder-Policy são obrigatórios para habilitar SharedArrayBuffer no CodeMirror 6.",
+      "source": "03-technical-spec §2.9",
+      "verified": true
+    },
+    {
+      "id": "F-012",
+      "statement": "O gracefulShutdown possui 8 estágios; o último é `wal_checkpoint(FULL)` antes de fechar o banco.",
+      "source": "04-operational-playbooks §4.5",
+      "verified": true
+    },
+    {
+      "id": "F-013",
+      "statement": "O inventário de testes v2.3 lista 109 testes distribuídos em 4 suítes (SEC, RES, BIZ, UX).",
+      "source": "TEST_INVENTORY_GREENFORGE_v2.3.md",
+      "verified": true
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C-001",
+      "rule": "O Árbitro usa modelo Pro (gemini-2.5-pro); Propositor e Crítico usam Flash ou Flash-Lite.",
+      "reason": "Custo controlado por papel; Pro mais caro, usado apenas 1x por ciclo.",
+      "negotiable": false
+    },
+    {
+      "id": "C-002",
+      "rule": "Nenhum comando shell com pipe, background, substitution ou process substitution é permitido.",
+      "reason": "Previne injeção de comandos e bypass da allowlist.",
+      "negotiable": false
+    },
+    {
+      "id": "C-003",
+      "rule": "O sistema nunca executa `git push` ou comandos que modifiquem repositórios remotos.",
+      "reason": "Modelo de segurança MVP é single-user local; push remoto é vetor de exfiltração.",
+      "negotiable": false
+    },
+    {
+      "id": "C-004",
+      "rule": "O worktree de cada agente é isolado; nenhum agente pode acessar worktree de outro.",
+      "reason": "Isolamento de informações e segurança (T-05).",
+      "negotiable": false
+    },
+    {
+      "id": "C-005",
+      "rule": "A variável GREENFORGE_GATE_SECRET é obrigatória em produção; ausência lança erro no startup.",
+      "reason": "HMAC dos Approval Cards exige segredo estável.",
+      "negotiable": false
+    }
+  ],
+  "open_items": [
+    {
+      "id": "O-001",
+      "question": "Os testes das suítes RES (Resiliência) e BIZ (Negócio) estão apenas mapeados, não implementados no código atual?",
+      "context": "O AUDIT_REPORT.md indica que BootReconciler, CPGLoopDetector e PreExecutionGuard não estão implementados no repositório base.",
+      "blocking": true,
+      "suggested_next_step": "Implementar os contratos determinísticos documentados ou atualizar auditoria para refletir código real."
+    },
+    {
+      "id": "O-002",
+      "question": "O fallback de SharedArrayBuffer (parser offline) foi testado em produção com os headers COOP/COEP ausentes?",
+      "context": "A especificação prevê badge de aviso, mas não há registro de validação em ambiente real.",
+      "blocking": false,
+      "suggested_next_step": "Simular ambiente sem isolation headers e verificar comportamento do CodeMirror 6."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "A-001",
+      "name": "01-vision-and-architecture.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Visão do produto, arquitetura geral, ADRs 1 a 13, tabela de resiliência e mapa de CVEs."
+    },
+    {
+      "id": "A-002",
+      "name": "02-functional-requirements.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "RF, regras invioláveis do debate, fluxo dos gates HITL, DiffLens, terminal integrado."
+    },
+    {
+      "id": "A-003",
+      "name": "03-technical-spec-and-data.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Schema Prisma, contratos TypeScript (SSE, WS, AgentFactory, CPGLoopDetector, PreExecutionGuard, BootReconciler)."
+    },
+    {
+      "id": "A-004",
+      "name": "04-operational-playbooks.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Classificação de erros, troubleshooting, incidentes, garbage collection e graceful shutdown de 8 estágios."
+    },
+    {
+      "id": "A-005",
+      "name": "05-governance-and-security.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Modelo de ameaças, modos de aprovação, redação de segredos, sandbox, secureGit wrapper com AST parsing."
+    },
+    {
+      "id": "A-006",
+      "name": "06-api-and-extensibility.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Protocolos SSE e WebSocket, endpoints HTTP, schema AGENTS.md, sistema de hooks e integração MCP."
+    },
+    {
+      "id": "A-007",
+      "name": "07-visual-identity-and-layout-specs.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Design system dark mode, grid tripartite, paleta de agentes, CodeMirror 6 com agent tags via decorations."
+    },
+    {
+      "id": "A-008",
+      "name": "08-motion-grammar-and-dynamic-states.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Gramática de movimento (L1/L2/L3), pulsação de agentes, transições de gates e matriz de 20 reações visuais."
+    },
+    {
+      "id": "A-009",
+      "name": "09-hardening-deterministic-contracts.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Contratos determinísticos de LoopDetector, Gate Hydration, Saga rollback, Shell allowlist, RAF buffering e CPGLoopDetector."
+    },
+    {
+      "id": "A-010",
+      "name": "CHANGELOG_HARDENING.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Registro das 4 vulnerabilidades resolvidas na v2.3 com mecanismos, validação e dependências."
+    },
+    {
+      "id": "A-011",
+      "name": "TEST_INVENTORY_GREENFORGE_v2.3.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Inventário de 109 testes unitários e de integração divididos em SEC (38), RES (32), BIZ (21), UX (18)."
+    },
+    {
+      "id": "A-012",
+      "name": "walkthrough.md",
+      "type": "documento",
+      "status": "final",
+      "location": "docs/",
+      "summary": "Relato de implementação e aprovação da suíte SEC (38 testes passando no Vitest)."
+    }
+  ],
+  "current_state": {
+    "where_we_stopped": "Documentação completa da v2.3 com especificações de resiliência e segurança. A suíte SEC está implementada e passando (38/38). As suítes RES, BIZ e UX são especificadas mas não totalmente implementadas no código (conforme AUDIT_REPORT).",
+    "next_actions": [
+      "Implementar BootReconciler, CPGLoopDetector e PreExecutionGuard no backend real",
+      "Configurar headers COOP/COEP no servidor de produção para habilitar parser do CodeMirror 6",
+      "Expandir testes automatizados para cobrir RES e BIZ",
+      "Validar fallback do editor em ambiente sem SharedArrayBuffer"
+    ],
+    "blockers": [
+      "A implementação atual do repositório não contém o sistema de debate com agentes dinâmicos (apenas mock do chat)",
+      "Banco de dados Prisma não está configurado; estado de sessão não persiste",
+      "Os testes de segurança (SEC) são os únicos que passam; o resto da aplicação é parcial ou simulado"
+    ]
+  },
+  "glossary": [
+    {
+      "term": "GreenForge NEXUS",
+      "meaning": "Sistema de IDE web com agentes de IA em protocolo de debate adversarial, gates HITL e mecanismos de resiliência (WAL, CPG, OCC)."
+    },
+    {
+      "term": "WAL Intent Log",
+      "meaning": "Write-Ahead Log que registra a intenção de uma transação cross-system (Git + SQLite) em três fases para recuperação após crash."
+    },
+    {
+      "term": "CPGLoopDetector",
+      "meaning": "Detector de loops semânticos baseado em Code Property Graph (AST+CFG+DFG) e Execution Oracle (comparação de outputs de testes)."
+    },
+    {
+      "term": "PreExecutionGuard",
+      "meaning": "Mecanismo de validação de Approval Cards com OCC, HMAC, worktree hash e fencing token (epoch_id)."
+    },
+    {
+      "term": "secureGit Wrapper",
+      "meaning": "Wrapper que executa comandos git com allowlist hierárquica, sanitização de ambiente e validação de path traversal via AST."
+    },
+    {
+      "term": "DiffLens",
+      "meaning": "Interface de revisão de código chunk-based no Gate 2, com detecção de dependências órfãs via análise AST."
+    },
+    {
+      "term": "HITL Gate",
+      "meaning": "Ponto de pausa para aprovação humana obrigatória, com três níveis: clarificação, síntese do árbitro e revisão de diffs."
+    }
+  ],
+  "people_and_roles": [
+    {
+      "name": "Arquiteto do GreenForge",
+      "role": "Product Manager / Arquiteto de sistemas",
+      "preferences": "Documentação exaustiva, contratos determinísticos, prioriza segurança e resiliência sobre velocidade."
+    },
+    {
+      "name": "Equipe de implementação",
+      "role": "Desenvolvedores Node.js/TypeScript",
+      "preferences": "Necessitam de blueprints claros e testes para guiar a implementação (TDD)."
+    }
+  ]
+}
+
+==========================================
+Conteúdo de contexto (4).json (caminho original: C:\Users\Usuario\Downloads\contexto (4).json) [enc: utf-8]:
+==========================================
+{
+  "meta": {
+    "id": "CP-20260528-1630",
+    "created_at": "2026-05-28T16:30:00Z",
+    "source": "Decisão de usar Cline como base open-source para GreenForge (substituto do Verdent AI)",
+    "domain": "software",
+    "summary": "Fork do Cline é a base mais sólida para implementar GreenForge como extensão VS Code."
+  },
+  "objective": {
+    "goal": "Construir uma alternativa open-source ao Verdent AI chamada GreenForge, substituindo a lógica de agente do Cline pelo protocolo de debate adversarial (Propositor/Crítico/Árbitro) com gates HITL e resiliência determinística.",
+    "non_goals": [
+      "Construir uma IDE do zero",
+      "Implementar o Verdent Deck (dashboard multi-projeto) no MVP",
+      "Suportar múltiplos usuários ou deploy em nuvem antes da validação local"
+    ],
+    "success_criteria": [
+      "Fork do Cline rodando localmente com a lógica GreenForge injetada como provider 'greenforge'",
+      "Usuário vê debate entre Propositor e Crítico antes da geração de código",
+      "Gate HITL exibe rationale em 3 camadas antes da aprovação",
+      "Código é aplicado ao worktree via git worktree e mergeado com squash commit",
+      "Sistema sobrevive a reinicializações sem perder estado (WAL + boot reconciler)"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "D-001",
+      "what": "Usar Cline como base de fork em vez de construir extensão do zero",
+      "why": "Cline já resolve acesso ao filesystem, terminal, diff viewer e roda no Extension Host correto (Node.js).",
+      "alternatives_rejected": ["Roo Code (descontinuado)", "Kilo Code (menos estável)", "OpenHands (mais complexo)"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-002",
+      "what": "Desenvolver localmente primeiro (usando chave do Gemini), depois migrar para Google AI Studio",
+      "why": "Ambiente local não tem restrições de web worker e permite debug mais rápido.",
+      "alternatives_rejected": ["Usar diretamente AI Studio com OpenVSCode Server (web worker bloqueia rede local)"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-003",
+      "what": "Injetar lógica GreenForge como um novo provider 'greenforge' dentro do sistema de API do Cline",
+      "why": "Reutiliza a infraestrutura existente de handlers (GeminiHandler, etc.) sem reescrever integrações de LLM.",
+      "alternatives_rejected": ["Substituir completamente o motor de tasks do Cline", "Criar extensão independente do zero"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-004",
+      "what": "Usar Gemini Flash (gratuito) para Propositor/Crítico e Gemini Pro para Árbitro durante desenvolvimento",
+      "why": "Tier gratuito oferece 1500 requests/dia sem custo e é familiar ao usuário.",
+      "alternatives_rejected": ["Anthropic (requer créditos pagos)", "Ollama (requer máquina local potente)"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-005",
+      "what": "Executar code-server localmente (ou no Google Cloud Shell) em vez de dentro do Google AI Studio",
+      "why": "Cloud Shell fornece ambiente Linux gratuito sem as restrições de web worker do AI Studio.",
+      "alternatives_rejected": ["code-server no AI Studio Cloud Run (web worker persistente)"],
+      "reversible": true,
+      "confidence": "high"
+    }
+  ],
+  "facts": [
+    {
+      "id": "F-001",
+      "statement": "Cline é uma extensão VS Code open source (Apache 2.0) com 58K stars, suporte a Ollama e mais madura da família.",
+      "source": "Pesquisa do assistente",
+      "verified": true
+    },
+    {
+      "id": "F-002",
+      "statement": "Roo Code encerrou desenvolvimento ativo e recomenda Cline como alternativa.",
+      "source": "Pesquisa do assistente",
+      "verified": true
+    },
+    {
+      "id": "F-003",
+      "statement": "Kilo Code é mais rico em funcionalidades (Orchestrator mode) mas menos estável que Cline.",
+      "source": "Pesquisa do assistente",
+      "verified": true
+    },
+    {
+      "id": "F-004",
+      "statement": "O Cline possui uma camada de API (`src/api`) com interface `ApiHandler` que abstrai chamadas a LLMs.",
+      "source": "Análise da estrutura do Cline pelo assistente",
+      "verified": false
+    },
+    {
+      "id": "F-005",
+      "statement": "O Gemini oferece tier gratuito de 1500 requests/dia para modelos Flash.",
+      "source": "Documentação pública do Google AI Studio",
+      "verified": true
+    },
+    {
+      "id": "F-006",
+      "statement": "O principal bloqueador no Google AI Studio foi o web worker host, que não pode ser forçado a rodar no servidor.",
+      "source": "Experimentos anteriores do usuário",
+      "verified": true
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C-001",
+      "rule": "O fork do Cline deve manter a licença original Apache 2.0.",
+      "reason": "Respeito aos direitos autorais e compatibilidade open source.",
+      "negotiable": false
+    },
+    {
+      "id": "C-002",
+      "rule": "O sistema deve rodar localmente sem dependência de serviços pagos durante o desenvolvimento.",
+      "reason": "Usuário não quer incorrer em custos antes da validação.",
+      "negotiable": false
+    }
+  ],
+  "open_items": [
+    {
+      "id": "O-001",
+      "question": "Blueprint de fork do Cline — quais arquivos tocar e quais deixar intactos?",
+      "context": "O assistente se ofereceu para mapear exatamente quais arquivos modificar, mas não gerou ainda o documento completo.",
+      "blocking": false,
+      "suggested_next_step": "Gerar o documento MD único com todos os detalhes de fork, conforme solicitado pelo usuário."
+    },
+    {
+      "id": "O-002",
+      "question": "Como lidar com a persistência de estado (BootReconciler, WAL) no contexto de extensão VS Code?",
+      "context": "O Cline não possui esse mecanismo; precisa ser adicionado.",
+      "blocking": true,
+      "suggested_next_step": "Implementar módulo de persistência separado usando SQLite no workspace."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "A-001",
+      "name": "Documentação GreenForge NEXUS v2.3",
+      "type": "documento",
+      "status": "final",
+      "location": "Pasta 'docs' no projeto",
+      "summary": "Especificação completa do protocolo de debate, resiliência e segurança."
+    },
+    {
+      "id": "A-002",
+      "name": "Análise comparativa de ferramentas (Cline, Roo, Kilo, OpenHands)",
+      "type": "documento",
+      "status": "final",
+      "location": "Conversa do Claude",
+      "summary": "Justificativa para escolha do Cline como base."
+    },
+    {
+      "id": "A-003",
+      "name": "Blueprint de fork do Cline (a ser gerado)",
+      "type": "plano",
+      "status": "draft",
+      "location": "Solicitado pelo usuário, não gerado ainda",
+      "summary": "Documento MD com instruções detalhadas de modificação do repositório Cline."
+    }
+  ],
+  "current_state": {
+    "where_we_stopped": "Usuário aprovou a escolha do Cline e pediu um documento único completo com todos os detalhes de implementação (blueprint de fork, substituição da src/api, modificação do core/task, etc.).",
+    "next_actions": [
+      "Gerar documento MD completo com instruções passo a passo para o fork do Cline",
+      "Configurar ambiente local com code-server e chave do Gemini",
+      "Implementar os arquivos novos (AgentFactory, RolePrompts, DebateRound) e modificar index.ts e api.ts",
+      "Testar o fork localmente antes de subir para Google AI Studio"
+    ],
+    "blockers": [
+      "Usuário não tem experiência com a estrutura interna do Cline; precisa de guia detalhado",
+      "A persistência de estado (BootReconciler, WAL) não está coberta pelo fork básico"
+    ]
+  },
+  "glossary": [
+    {
+      "term": "Cline",
+      "meaning": "Extensão VS Code open source (antigo Claude Dev) com suporte a múltiplos provedores LLM e modo Plan/Act."
+    },
+    {
+      "term": "GreenForge",
+      "meaning": "Sistema de agentes com debate adversarial, gates HITL e resiliência determinística, a ser implementado como fork do Cline."
+    },
+    {
+      "term": "ApiHandler",
+      "meaning": "Interface no código do Cline que abstrai chamadas a LLMs; o ponto de injeção para a lógica GreenForge."
+    },
+    {
+      "term": "Provider greenforge",
+      "meaning": "Novo tipo de provedor a ser adicionado no buildApiHandler, que retorna uma fábrica de três agentes (Propositor, Crítico, Árbitro)."
+    },
+    {
+      "term": "Verdent AI",
+      "meaning": "Ferramenta comercial de desenvolvimento com agentes IA que o GreenForge visa substituir como alternativa open source."
+    }
+  ],
+  "people_and_roles": [
+    {
+      "name": "Usuário",
+      "role": "Product Owner / Arquiteto do GreenForge",
+      "preferences": "Prefere reutilizar componentes prontos (Cline) em vez de construir do zero; busca menor resistência para validar MVP."
+    },
+    {
+      "name": "Claude (assistente)",
+      "role": "Arquiteto de soluções e consultor técnico",
+      "preferences": "Fornece análises detalhadas, mapeamentos e recomendações baseadas em pesquisa; evita soluções genéricas."
+    }
+  ]
+}
+
+
+==========================================
+Arquivos Avulsos (Caminhos Originais):
+==========================================
+- C:\Users\Usuario\Downloads\contexto (1).json
+- C:\Users\Usuario\Downloads\contexto (2).json
+- C:\Users\Usuario\Downloads\contexto (3).json
+- C:\Users\Usuario\Downloads\contexto (4).json

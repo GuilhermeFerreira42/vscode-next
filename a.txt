@@ -1,0 +1,31 @@
+Listagem de caminhos de pasta
+O número de série do volume é BA20-2DEC
+C:.
+|   -atualiza-git.bat
+|   .gitignore
+|   contexto.json
+|   git_automation.sh
+|   
++---cline
++---docs
+|   |   experiencia.txt
+|   |   GreenForge como extensão open source do Verdent.md
+	|
+|   \---GreenForge-NEXUS
+|           01-vision-and-architecture.md
+|           02-functional-requirements.md
+|           03-technical-spec-and-data.md
+|           04-operational-playbooks.md
+|           05-governance-and-security.md
+|           06-api-and-extensibility.md
+|           07-visual-identity-and-layout-specs.md
+|           08-motion-grammar-and-dynamic-states.md
+|           09-hardening-deterministic-contracts.md
+|           CHANGELOG_HARDENING.md
+|           implementation_plan.md
+|           INTEGRACAO_V2.3_COMPLETA.md
+|           TEST_INVENTORY_GREENFORGE_v2.3.md
+|           walkthrough.md
+|           
+\---ide-vscode
+    \---openvscode-server-v1.109.5-linux-x64                    
