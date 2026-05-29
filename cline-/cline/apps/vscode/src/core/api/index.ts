@@ -44,6 +44,7 @@ import { VertexHandler } from "./providers/vertex"
 import { VsCodeLmHandler } from "./providers/vscode-lm"
 import { WandbHandler } from "./providers/wandb"
 import { ZAiHandler } from "./providers/zai"
+import { XAIHandler } from "./providers/xai"
 import { GreenForgeApiHandler } from "./greenforge/GreenForgeOrchestrator"
 import { ApiStream, ApiStreamUsageChunk } from "./transform/stream"
 

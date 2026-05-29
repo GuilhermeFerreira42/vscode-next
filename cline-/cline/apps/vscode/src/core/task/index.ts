@@ -3775,7 +3775,7 @@ export class Task {
 		const { runDebateRound, runAgent } = await import("../api/greenforge/DebateRound")
 		const { MANAGER_CLARIFICATION_PROMPT } = await import("../api/greenforge/RolePrompts")
 
-		const config = (this.api as any).getConfig?.() || this.stateManager.getSettings()
+		const config = (this.api as any).getConfig?.() || this.stateManager.getApiConfiguration()
 		const agents = createAgents(config)
 		const gateManager = new GateManager(this.ask.bind(this) as any, this.say.bind(this) as any)
 
@@ -3786,7 +3786,7 @@ export class Task {
 		const managerOutput = await runAgent(
 			"manager", 
 			MANAGER_CLARIFICATION_PROMPT, 
-			[{ type: "user", ts: Date.now(), content: [{ type: "text", text: taskText }] }], 
+			[{ role: "user", ts: Date.now(), content: [{ type: "text", text: taskText }] }], 
 			agents.arbiter,
 			(agentId, token) => { this.say("gf_agent_token" as any, JSON.stringify({ agentId, token })) }
 		)
@@ -3826,7 +3826,7 @@ export class Task {
 		const generatedCode = await runAgent(
 			"proposer",
 			"Você deve gerar o código final em formato JSON { \"files\": [ { \"path\", \"content\" } ] }",
-			[{ type: "user", ts: Date.now(), content: [{ type: "text", text: generatePrompt }] }],
+			[{ role: "user", ts: Date.now(), content: [{ type: "text", text: generatePrompt }] }],
 			agents.proposer,
 			(agentId, token) => { this.say("gf_agent_token" as any, JSON.stringify({ agentId, token })) }
 		)

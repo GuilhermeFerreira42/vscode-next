@@ -14,17 +14,17 @@ import { main as generateProtoBusSetup } from "./generate-protobus-setup.mjs"
 
 const require = createRequire(import.meta.url)
 const isWindows = process.platform === "win32"
-const GRPC_TOOLS_PROTOC = path.join(require.resolve("grpc-tools"), "../bin", isWindows ? "protoc.exe" : "protoc")
-// Legacy compatibility: some older/local Windows setups provision protoc into tmp-protoc.
-// Prefer that path when present, but fall back to the grpc-tools bundled binary used by CI/npm installs.
-const LEGACY_WINDOWS_PROTOC = path.resolve("tmp-protoc/bin/protoc.exe")
-const PROTOC = isWindows && fsSync.existsSync(LEGACY_WINDOWS_PROTOC) ? LEGACY_WINDOWS_PROTOC : GRPC_TOOLS_PROTOC
 
-if (!fsSync.existsSync(PROTOC)) {
-	const windowsHint = isWindows
-		? ` Neither ${LEGACY_WINDOWS_PROTOC} nor the grpc-tools bundled protoc at ${GRPC_TOOLS_PROTOC} exists.`
-		: ""
-	console.error(chalk.red(`protoc not found at ${PROTOC}.${windowsHint}`))
+// Usando o protoc global instalado via winget
+const PROTOC = "protoc"
+
+// Validação correta para comando global do sistema
+try {
+	// Executa 'protoc --version' para saber se o sistema reconhece o comando global
+	execSync(`${PROTOC} --version`, { stdio: "ignore" })
+} catch (e) {
+	console.error(chalk.red(`Erro: O comando global '${PROTOC}' não foi encontrado no PATH do sistema.`))
+	console.error(chalk.yellow(`Certifique-se de que o protoc instalado via winget está acessível no terminal.`))
 	process.exit(1)
 }
 
@@ -35,16 +35,16 @@ const NICE_JS_OUT_DIR = path.resolve("src/generated/nice-grpc")
 const DESCRIPTOR_OUT_DIR = path.resolve("dist-standalone/proto")
 
 const TS_PROTO_PLUGIN = isWindows
-	? path.resolve("node_modules/.bin/protoc-gen-ts_proto.cmd") // Use the .bin directory path for Windows
+	? path.resolve("node_modules/.bin/protoc-gen-ts_proto.cmd") // Caminho correto para o .bin no Windows
 	: require.resolve("ts-proto/protoc-gen-ts_proto")
 
 const TS_PROTO_OPTIONS = [
 	"env=both",
 	"esModuleInterop=true",
-	"outputServices=generic-definitions", // output generic ServiceDefinitions
-	"outputIndex=true", // output an index file for each package which exports all protos in the package.
-	"useOptionals=none", // scalar and message fields are required unless they are marked as optional.
-	"useDate=false", // Timestamp fields will not be automatically converted to Date.
+	"outputServices=generic-definitions",
+	"outputIndex=true",
+	"useOptionals=none",
+	"useDate=false",
 ]
 
 async function main() {
@@ -53,25 +53,26 @@ async function main() {
 	await generateProtoBusSetup()
 	await generateHostBridgeClient()
 }
+
 async function compileProtos() {
 	console.log(chalk.bold.blue("Compiling Protocol Buffers..."))
 
-	// Check for Apple Silicon compatibility before proceeding
+	// Verifica compatibilidade com Apple Silicon
 	checkAppleSiliconCompatibility()
 
-	// Create output directories if they don't exist
+	// Cria os diretórios de saída se não existirem
 	for (const dir of [TS_OUT_DIR, GRPC_JS_OUT_DIR, NICE_JS_OUT_DIR, DESCRIPTOR_OUT_DIR]) {
 		await fs.mkdir(dir, { recursive: true })
 	}
 
-	// Process all proto files
+	// Processa todos os arquivos .proto
 	const protoFiles = await globby("**/*.proto", { cwd: PROTO_DIR, realpath: true })
 	console.log(chalk.cyan(`Processing ${protoFiles.length} proto files from`), PROTO_DIR)
 
 	tsProtoc(TS_OUT_DIR, protoFiles, TS_PROTO_OPTIONS)
-	// grpc-js is used to generate service impls for the ProtoBus service.
+	// grpc-js é usado para gerar implementações de serviço para o ProtoBus.
 	tsProtoc(GRPC_JS_OUT_DIR, protoFiles, ["outputServices=grpc-js", ...TS_PROTO_OPTIONS])
-	// nice-js is used for the Host Bridge client impls because it uses promises.
+	// nice-grpc é usado para as implementações do cliente Host Bridge (baseado em Promises).
 	tsProtoc(NICE_JS_OUT_DIR, protoFiles, ["outputServices=nice-grpc,useExactTypes=false", ...TS_PROTO_OPTIONS])
 
 	const descriptorFile = path.join(DESCRIPTOR_OUT_DIR, "descriptor_set.pb")
@@ -113,16 +114,15 @@ function tsProtoc(outDir, protoFiles, protoOptions) {
 }
 
 async function cleanup() {
-	// Clean up existing generated files
 	log_verbose(chalk.cyan("Cleaning up existing generated TypeScript files..."))
 	await rmrf(TS_OUT_DIR)
 	await rmrf("src/generated")
 
-	// Clean up generated files that were moved.
 	await rmrf("src/standalone/services/host-grpc-client.ts")
 	await rmrf("src/standalone/server-setup.ts")
 	await rmrf("src/hosts/vscode/host-grpc-service-config.ts")
 	await rmrf("src/core/controller/grpc-service-config.ts")
+
 	const oldhostbridgefiles = [
 		"src/hosts/vscode/workspace/methods.ts",
 		"src/hosts/vscode/workspace/index.ts",
@@ -166,18 +166,14 @@ async function cleanup() {
 	}
 }
 
-// Check for Apple Silicon compatibility
 function checkAppleSiliconCompatibility() {
-	// Only run check on macOS
 	if (process.platform !== "darwin") {
 		return
 	}
 
-	// Check if running on Apple Silicon
 	const cpuArchitecture = os.arch()
 	if (cpuArchitecture === "arm64") {
 		try {
-			// Check if Rosetta is installed
 			const rosettaCheck = execSync('/usr/bin/pgrep oahd || echo "NOT_INSTALLED"').toString().trim()
 
 			if (rosettaCheck === "NOT_INSTALLED") {
@@ -202,7 +198,6 @@ function log_verbose(s) {
 	}
 }
 
-// Run the main function
 main().catch((error) => {
 	console.error(chalk.red("Error:"), error)
 	process.exit(1)

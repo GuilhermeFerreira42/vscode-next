@@ -26,6 +26,9 @@ function convertClineAskToProtoEnum(ask: AppClineAsk | undefined): ClineAsk | un
 		summarize_task: ClineAsk.SUMMARIZE_TASK,
 		report_bug: ClineAsk.REPORT_BUG,
 		use_subagents: ClineAsk.USE_SUBAGENTS,
+		gf_gate_0_clarification: ClineAsk.FOLLOWUP,
+		gf_gate_1_approval: ClineAsk.FOLLOWUP,
+		gf_gate_2_difflens: ClineAsk.FOLLOWUP,
 	}
 
 	const result = mapping[ask]
@@ -109,6 +112,11 @@ function convertClineSayToProtoEnum(say: AppClineSay | undefined): ClineSay | un
 		use_subagents: ClineSay.USE_SUBAGENTS_SAY,
 		subagent_usage: ClineSay.SUBAGENT_USAGE,
 		generate_explanation: ClineSay.GENERATE_EXPLANATION,
+		gf_debate_status: ClineSay.TEXT,
+		gf_agent_token: ClineSay.TEXT,
+		gf_issue_found: ClineSay.TEXT,
+		gf_convergence: ClineSay.TEXT,
+		gf_round_complete: ClineSay.TEXT,
 	}
 
 	const result = mapping[say]

@@ -55,7 +55,7 @@ export async function runDebateRound(
 	// Build context from previous rounds
 	const contextMessages: ClineStorageMessage[] = [
 		{
-			type: "user",
+			role: "user",
 			ts: Date.now(),
 			content: [{ type: "text", text: `Task: ${taskDescription}` }]
 		}
@@ -64,7 +64,7 @@ export async function runDebateRound(
 	if (previousRounds.length > 0) {
 		const lastRound = previousRounds[previousRounds.length - 1]
 		contextMessages.push({
-			type: "user",
+			role: "user",
 			ts: Date.now(),
 			content: [{ type: "text", text: `Previous Round Feedback: ${JSON.stringify(lastRound.criticOutput)}` }]
 		})
@@ -84,7 +84,7 @@ export async function runDebateRound(
 		const criticMessages: ClineStorageMessage[] = [
 			...contextMessages,
 			{
-				type: "user",
+				role: "user",
 				ts: Date.now(),
 				content: [{ type: "text", text: `New Proposal: ${JSON.stringify(proposerOutput)}` }]
 			}
@@ -96,7 +96,7 @@ export async function runDebateRound(
 	const arbiterMessages: ClineStorageMessage[] = [
 		...contextMessages,
 		{
-			type: "user",
+			role: "user",
 			ts: Date.now(),
 			content: [{ type: "text", text: `Proposal: ${JSON.stringify(proposerOutput)}\n\nCritique: ${JSON.stringify(criticOutput)}` }]
 		}
