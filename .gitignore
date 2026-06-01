@@ -1,47 +1,12 @@
+```
 # Dependencies
 node_modules/
 
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+# Editors
+.vscode/
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE / Editors
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.idea/
-*.swp
-*.swo
-
-# Environment variables
+# Environment
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Build / Output / Packaging
-dist/
-build/
-out/
-*.tgz
-
-# Misc
-.gemini/
-coverage/
-.nyc_output/
-ide-vscode/openvscode-server-*/
+*.env.*
+```

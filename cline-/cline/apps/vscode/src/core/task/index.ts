@@ -2799,6 +2799,7 @@ export class Task {
 
 			// --- INJECT GREENFORGE HERE ---
 			if (this.api.getModel().id === "greenforge") {
+					console.log("\n\x1b[32m[GREENFORGE NEXUS] INTERCEPTAÇÃO ATIVA - Iniciando Loop Adversarial...\x1b[0m\n")
 				const didEndLoop = await this.orchestrateGreenForgeDebate(userContent)
 				return didEndLoop
 			}
