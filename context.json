@@ -1,0 +1,414 @@
+{
+  "meta": {
+    "id": "CP-20260601-1106",
+    "created_at": "2026-06-01T14:06:00-03:00",
+    "source": "Compilação, empacotamento VSIX e setup WSL do GreenForge NEXUS",
+    "domain": "software",
+    "summary": "GreenForge NEXUS v2.3 compilado e empacotado como VSIX. Servidor OpenVSCode rodando. Pronto para testes."
+  },
+  "objective": {
+    "goal": "Transformar o fork do Cline em GreenForge NEXUS, um orquestrador multiagente adversarial com debate (Propositor, Crítico, Árbitro) e gates HITL, empacotado como extensão VSIX instalável no OpenVSCode Server.",
+    "non_goals": [
+      "Modificar a infraestrutura base do GeminiHandler nativo do Cline",
+      "Reescrever o ecossistema de mensageria da interface do chat do zero",
+      "Implementar persistência SQLite/Prisma nesta fase (postergado para Fase 2)",
+      "Implementar BootReconciler de resiliência nesta fase (postergado para Fase 2)"
+    ],
+    "success_criteria": [
+      "Extensão GreenForge VSIX gerada sem erros de compilação",
+      "OpenVSCode Server rodando e acessível via browser em localhost:3000",
+      "Extensão instalável via 'Install from VSIX' na IDE web",
+      "Loop de debate adversarial funcional com 3 agentes (Propositor, Crítico, Árbitro)",
+      "Gates HITL (0, 1, 2) integrados ao mecanismo this.ask() do Cline"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "D-001",
+      "what": "O fork do Cline fica em cline-/cline (não em cline/) para evitar conflitos com o submodule git original",
+      "why": "O diretório 'cline' original é um submodule git e causa conflitos de permissão.",
+      "alternatives_rejected": ["Usar o diretório cline/ original"],
+      "reversible": false,
+      "confidence": "high"
+    },
+    {
+      "id": "D-002",
+      "what": "Usar WSL (Ubuntu 22.04) para rodar o OpenVSCode Server e compilar a extensão, mesmo estando no Windows",
+      "why": "Os binários do OpenVSCode Server são compilados para Linux x64.",
+      "alternatives_rejected": ["Rodar nativamente no Windows", "Baixar versão Windows do OpenVSCode"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-003",
+      "what": "Instalar Node.js 20 via nvm dentro do WSL para compilar a extensão",
+      "why": "O WSL Ubuntu 22.04 vem sem Node.js instalado.",
+      "alternatives_rejected": ["Usar Node do Windows via interop WSL"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-004",
+      "what": "Instalar protoc via apt-get no WSL (protobuf-compiler v3.12.4) ao invés de usar winget",
+      "why": "O protoc precisa rodar nativamente no Linux dentro do WSL.",
+      "alternatives_rejected": ["Usar protoc do Windows via interop", "Usar @bufbuild/buf"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-005",
+      "what": "Adicionar --experimental_allow_proto3_optional ao protoc no build-proto.mjs",
+      "why": "O protoc 3.12.4 do Ubuntu 22.04 não suporta proto3 optional fields nativamente.",
+      "alternatives_rejected": ["Instalar protoc mais recente manualmente"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-006",
+      "what": "Substituir fs.copyFileSync por safeCopy (readFileSync+writeFileSync) no esbuild.mjs para copiar .wasm",
+      "why": "A syscall copyfile do Node.js gera EPERM ao copiar arquivos via WSL para NTFS montado em /mnt/c.",
+      "alternatives_rejected": ["chmod 777 dist (falha no NTFS)", "Copiar manualmente via bash cp"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-007",
+      "what": "Usar --no-dependencies no vsce package para gerar o VSIX",
+      "why": "O @tailwindcss/vite exige vite como peer dependency, mas vite é apenas devDependency; o esbuild já faz bundle de tudo.",
+      "alternatives_rejected": ["Mover vite para dependencies (desnecessário e pesado)"],
+      "reversible": true,
+      "confidence": "high"
+    },
+    {
+      "id": "D-008",
+      "what": "Substituir console.error por Logger.error nos arquivos do GreenForge (DebateRound.ts e task/index.ts)",
+      "why": "O linter Biome proíbe chamadas diretas a console; o projeto usa Logger service.",
+      "alternatives_rejected": ["Desabilitar regra de lint"],
+      "reversible": true,
+      "confidence": "high"
+    }
+  ],
+  "facts": [
+    {
+      "id": "F-001",
+      "statement": "O arquivo VSIX final foi gerado com sucesso: cline-/cline/apps/vscode/dist/greenforge.vsix (~9.87 MB, 104 arquivos)",
+      "source": "Output do vsce package",
+      "verified": true
+    },
+    {
+      "id": "F-002",
+      "statement": "O OpenVSCode Server está rodando na porta 3000 via WSL com token 8871e06d-8d4c-4213-afd7-265951e7c72f",
+      "source": "Output do servidor",
+      "verified": true
+    },
+    {
+      "id": "F-003",
+      "statement": "O projeto NÃO tem package.json na raiz (C:\\Users\\Usuario\\Desktop\\vscode-next). Os package.json relevantes estão em cline-/cline/apps/vscode/ e ide-vscode/openvscode-server-v1.109.5-linux-x64/",
+      "source": "Verificação do filesystem",
+      "verified": true
+    },
+    {
+      "id": "F-004",
+      "statement": "O Node.js v20.20.2 e npm 10.8.2 estão instalados no WSL via nvm (diretório ~/.nvm)",
+      "source": "Output do nvm install",
+      "verified": true
+    },
+    {
+      "id": "F-005",
+      "statement": "O protoc v3.12.4 está instalado no WSL via apt (pacote protobuf-compiler)",
+      "source": "Output do apt-get install",
+      "verified": true
+    },
+    {
+      "id": "F-006",
+      "statement": "O WSL usa Ubuntu 22.04 com usuário 'a' (criado durante instalação)",
+      "source": "Output do wsl --install Ubuntu-22.04",
+      "verified": true
+    },
+    {
+      "id": "F-007",
+      "statement": "O sistema operacional host é Windows (Desktop: C:\\Users\\Usuario\\Desktop\\vscode-next)",
+      "source": "Verificação do ambiente",
+      "verified": true
+    },
+    {
+      "id": "F-008",
+      "statement": "O Biome é o linter/formatter do projeto (não ESLint). Regra customizada proíbe console.log/error diretos.",
+      "source": "Erro de lint durante build",
+      "verified": true
+    },
+    {
+      "id": "F-009",
+      "statement": "Todos os 21 arquivos .proto foram compilados com sucesso gerando os tipos TypeScript (ts-proto) em 3 diretórios de saída",
+      "source": "Output do npm run protos",
+      "verified": true
+    },
+    {
+      "id": "F-010",
+      "statement": "O webview-ui usa Vite 7.2.2 + React para build, gerando assets em webview-ui/build/",
+      "source": "Output do vite build",
+      "verified": true
+    },
+    {
+      "id": "F-011",
+      "statement": "O último commit é 20a101a na branch main, já com push para origin",
+      "source": "Output do git push",
+      "verified": true
+    },
+    {
+      "id": "F-012",
+      "statement": "O GreenForge NEXUS v2.3 implementa: AgentFactory, RolePrompts, DebateRound, GateManager e GreenForgeOrchestrator em src/core/api/greenforge/",
+      "source": "Código implementado em sessões anteriores",
+      "verified": true
+    },
+    {
+      "id": "F-013",
+      "statement": "O Logger service do projeto é importado via: import { Logger } from '@/shared/services/Logger' (alias @/) ou from '@shared/services/Logger' (alias @shared/). NÃO usar os dois ao mesmo tempo no mesmo arquivo — causa TS2300 Duplicate identifier.",
+      "source": "Erro de compilação corrigido",
+      "verified": true
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C-001",
+      "rule": "NÃO usar fs.copyFileSync para copiar arquivos de node_modules para dist/ quando rodando via WSL em /mnt/c (NTFS)",
+      "reason": "Gera EPERM por limitação da camada de montagem WSL→NTFS; usar readFileSync+writeFileSync.",
+      "negotiable": false
+    },
+    {
+      "id": "C-002",
+      "rule": "NÃO usar chmod em diretórios montados em /mnt/c dentro do WSL",
+      "reason": "O NTFS não suporta permissões POSIX sem metadados extras habilitados no WSL.",
+      "negotiable": false
+    },
+    {
+      "id": "C-003",
+      "rule": "SEMPRE passar --experimental_allow_proto3_optional ao protoc quando usando protoc 3.12.x",
+      "reason": "Esta versão não suporta campos optional do proto3 sem essa flag.",
+      "negotiable": false
+    },
+    {
+      "id": "C-004",
+      "rule": "SEMPRE usar --no-dependencies no vsce package enquanto @tailwindcss/vite estiver nas dependencies",
+      "reason": "O vite é devDependency mas @tailwindcss/vite o exige como peer — o esbuild já resolve tudo no bundle.",
+      "negotiable": true
+    },
+    {
+      "id": "C-005",
+      "rule": "NÃO usar console.log/console.error nos arquivos TypeScript em src/. Usar Logger service.",
+      "reason": "Regra customizada do Biome lint que proíbe chamadas diretas ao console.",
+      "negotiable": false
+    },
+    {
+      "id": "C-006",
+      "rule": "NÃO tentar regenerar arquivos .proto localmente no Windows nativo (apenas via WSL)",
+      "reason": "O protoc e as dependências de build precisam de ambiente Linux.",
+      "negotiable": false
+    },
+    {
+      "id": "C-007",
+      "rule": "Para iniciar o nvm dentro de scripts bash no WSL, SEMPRE exportar NVM_DIR e source do nvm.sh antes de usar node/npm",
+      "reason": "O nvm não é carregado automaticamente em scripts não-interativos.",
+      "negotiable": false
+    },
+    {
+      "id": "C-008",
+      "rule": "O código do fork (GreenForge) fica APENAS em cline-/cline/, nunca em cline/",
+      "reason": "cline/ é um submodule git que causa conflitos de permissão.",
+      "negotiable": false
+    }
+  ],
+  "open_items": [
+    {
+      "id": "O-001",
+      "question": "Instalar a extensão greenforge.vsix no OpenVSCode Server via browser e testar o loop de debate",
+      "context": "O VSIX foi gerado mas ainda não foi instalado na IDE web para teste funcional completo.",
+      "blocking": true,
+      "suggested_next_step": "Abrir localhost:3000, ir em Extensions > Install from VSIX, selecionar dist/greenforge.vsix"
+    },
+    {
+      "id": "O-002",
+      "question": "Configurar chave API do Gemini no GreenForge provider dentro da IDE web",
+      "context": "Sem a chave API, o loop de debate não pode chamar os agentes.",
+      "blocking": true,
+      "suggested_next_step": "Após instalar a extensão, abrir settings do Cline, selecionar GreenForge provider e inserir a API key"
+    },
+    {
+      "id": "O-003",
+      "question": "Persistência SQLite (Prisma) para estado de debate entre sessões",
+      "context": "Postergado para Fase 2 do MVP. Atualmente o estado de debate é mantido em memória.",
+      "blocking": false,
+      "suggested_next_step": "Implementar após validação funcional do loop de debate"
+    },
+    {
+      "id": "O-004",
+      "question": "BootReconciler para resiliência de reconexão",
+      "context": "Postergado para Fase 2 do MVP.",
+      "blocking": false,
+      "suggested_next_step": "Implementar após validação funcional"
+    },
+    {
+      "id": "O-005",
+      "question": "O lint:proto mostra aviso 'node: not found' ao executar buf dentro do WSL via vsce",
+      "context": "O buf tenta executar node mas o PATH do nvm não está disponível quando o vsce roda npm scripts em subshell.",
+      "blocking": false,
+      "suggested_next_step": "Criar symlink de node em /usr/local/bin ou ajustar o PATH no .bashrc do WSL"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "A-001",
+      "name": "greenforge.vsix",
+      "type": "código",
+      "status": "final",
+      "location": "cline-/cline/apps/vscode/dist/greenforge.vsix",
+      "summary": "Extensão VSIX compilada e empacotada do GreenForge NEXUS v2.3, pronta para instalação."
+    },
+    {
+      "id": "A-002",
+      "name": "setup-node.sh",
+      "type": "código",
+      "status": "final",
+      "location": "setup-node.sh (raiz do projeto)",
+      "summary": "Script bash para WSL que instala nvm+node+protoc e compila a extensão automaticamente."
+    },
+    {
+      "id": "A-003",
+      "name": "Motor de Debate GreenForge",
+      "type": "código",
+      "status": "final",
+      "location": "cline-/cline/apps/vscode/src/core/api/greenforge/",
+      "summary": "Diretório com AgentFactory, RolePrompts, DebateRound, GateManager e GreenForgeOrchestrator."
+    },
+    {
+      "id": "A-004",
+      "name": "GreenForgeProvider.tsx",
+      "type": "código",
+      "status": "final",
+      "location": "cline-/cline/apps/vscode/webview-ui/src/components/settings/providers/GreenForgeProvider.tsx",
+      "summary": "Componente React de configuração do provider GreenForge na UI do Cline."
+    },
+    {
+      "id": "A-005",
+      "name": "esbuild.mjs (modificado)",
+      "type": "código",
+      "status": "final",
+      "location": "cline-/cline/apps/vscode/esbuild.mjs",
+      "summary": "Build config com safeCopy para resolver EPERM de cópia .wasm no WSL→NTFS."
+    },
+    {
+      "id": "A-006",
+      "name": "build-proto.mjs (modificado)",
+      "type": "código",
+      "status": "final",
+      "location": "cline-/cline/apps/vscode/scripts/build-proto.mjs",
+      "summary": "Script de compilação de protos com flag --experimental_allow_proto3_optional e import limpo."
+    }
+  ],
+  "current_state": {
+    "where_we_stopped": "VSIX gerado com sucesso (greenforge.vsix ~9.87MB). OpenVSCode Server rodando em localhost:3000. Commit 20a101a pushado para origin/main. Próximo passo: instalar o VSIX na IDE web e testar o loop de debate adversarial com uma API key do Gemini.",
+    "next_actions": [
+      "Abrir http://localhost:3000 no browser (se o servidor WSL ainda estiver ativo; caso contrário, rodar: wsl ./ide-vscode/openvscode-server-v1.109.5-linux-x64/bin/openvscode-server)",
+      "Instalar dist/greenforge.vsix via Extensions > Install from VSIX na IDE web",
+      "Configurar chave API do Gemini no provider GreenForge",
+      "Testar loop de debate com uma tarefa de código complexa",
+      "Validar que os 3 gates HITL funcionam (Gate 0: clarificação, Gate 1: approval card, Gate 2: diff lens)",
+      "Após validação: implementar persistência SQLite e BootReconciler (Fase 2)"
+    ],
+    "blockers": [
+      "Nenhum blocker técnico. O VSIX está pronto. A única dependência é ter uma API key válida do Gemini para testar."
+    ]
+  },
+  "glossary": [
+    {
+      "term": "GreenForge NEXUS",
+      "meaning": "Nome do fork do Cline transformado em orquestrador multiagente adversarial com debate."
+    },
+    {
+      "term": "Debate Adversarial",
+      "meaning": "Arquitetura onde 3 agentes (Propositor, Crítico, Árbitro) debatem antes de gerar código. Round 1 é paralelo (anti-herding), rounds 2+ são sequenciais."
+    },
+    {
+      "term": "HITL Gates",
+      "meaning": "Human-in-the-Loop checkpoints. Gate 0 = clarificação socrática, Gate 1 = approval card da síntese, Gate 2 = DiffLens do código gerado."
+    },
+    {
+      "term": "Propositor",
+      "meaning": "Agente que gera propostas de solução usando Gemini Flash."
+    },
+    {
+      "term": "Crítico",
+      "meaning": "Agente que avalia e critica propostas, identificando falhas e riscos."
+    },
+    {
+      "term": "Árbitro",
+      "meaning": "Agente que sintetiza proposta+crítica e decide CONVERGE ou ITERATE, usando Gemini Pro."
+    },
+    {
+      "term": "VSIX",
+      "meaning": "Formato de empacotamento de extensões do VS Code. Arquivo instalável diretamente na IDE."
+    },
+    {
+      "term": "OpenVSCode Server",
+      "meaning": "Fork open-source do VS Code que roda como servidor web, acessível pelo browser."
+    },
+    {
+      "term": "safeCopy",
+      "meaning": "Função helper no esbuild.mjs que substitui fs.copyFileSync por readFileSync+writeFileSync para evitar EPERM no WSL."
+    },
+    {
+      "term": "Biome",
+      "meaning": "Linter e formatter usado no projeto Cline (substitui ESLint). Tem regra customizada que proíbe console.log/error."
+    },
+    {
+      "term": "nvm",
+      "meaning": "Node Version Manager. Instalado em ~/.nvm no WSL para gerenciar versões do Node.js."
+    }
+  ],
+  "people_and_roles": [
+    {
+      "name": "Guilherme Ferreira",
+      "role": "Desenvolvedor / Dono do projeto",
+      "preferences": "Prefere soluções diretas, mínimo de tokens gastos. Usa batch script para automação git. Repo: github.com/GuilhermeFerreira42/vscode-next"
+    }
+  ],
+  "critico_para_proxima_ia": {
+    "o_que_ter_na_memoria": [
+      "O projeto é um FORK do Cline (extensão VS Code) localizado em cline-/cline/apps/vscode/",
+      "O código do GreenForge está em src/core/api/greenforge/ (4 arquivos principais)",
+      "O VSIX está pronto em dist/greenforge.vsix — NÃO precisa recompilar a menos que haja mudanças",
+      "O ambiente de compilação é WSL Ubuntu 22.04 com Node 20 via nvm",
+      "O linter é Biome (NÃO ESLint). Regra: usar Logger ao invés de console",
+      "O projeto usa protobuf + gRPC (ts-proto para geração de tipos)",
+      "O OpenVSCode Server é um binário Linux em ide-vscode/openvscode-server-v1.109.5-linux-x64/",
+      "Para iniciar o servidor: wsl ./ide-vscode/openvscode-server-v1.109.5-linux-x64/bin/openvscode-server",
+      "Para recompilar: wsl bash setup-node.sh (na raiz do projeto)",
+      "Para reempacotar VSIX: wsl -e bash -c 'cd /mnt/c/.../apps/vscode && npx vsce package --no-dependencies --out dist/greenforge.vsix'"
+    ],
+    "o_que_evitar_ler_para_economizar_tokens": [
+      "NÃO ler package-lock.json (20763 linhas, nenhuma informação útil)",
+      "NÃO ler node_modules/ ou qualquer dependência",
+      "NÃO ler os arquivos gerados em src/generated/ e src/shared/proto/ (são auto-gerados pelo protoc)",
+      "NÃO ler webview-ui/node_modules/ ou webview-ui/build/",
+      "NÃO ler dist/extension.js (bundle minificado de 46MB)",
+      "NÃO ler CHANGELOG.md (90KB de histórico antigo do Cline original)",
+      "NÃO ler .git/ ou qualquer arquivo do git internals",
+      "NÃO ler ide-vscode/ (binários do OpenVSCode Server, não modificáveis)"
+    ],
+    "ler_somente_se_necessario": [
+      "cline-/cline/apps/vscode/package.json — só se precisar ver scripts ou dependências",
+      "cline-/cline/apps/vscode/tsconfig.json — só se houver erros de compilação",
+      "cline-/cline/apps/vscode/src/core/task/index.ts — arquivo ENORME (3856 linhas). O método orchestrateGreenForgeDebate() está nas últimas ~85 linhas (a partir de ~3772). Ler APENAS essa região se precisar alterar o loop de debate.",
+      "cline-/cline/apps/vscode/webview-ui/src/components/settings/ApiOptions.tsx — só se precisar adicionar novos providers à UI",
+      "cline-/cline/apps/vscode/scripts/build-proto.mjs — só se houver erros de compilação dos protos"
+    ],
+    "armadilhas_conhecidas": [
+      "O arquivo src/core/task/index.ts já importa Logger via '@/shared/services/Logger' (linha ~109). NÃO adicionar import duplicado com '@shared/services/Logger' — causa erro TS2300.",
+      "O protoc 3.12.4 do Ubuntu 22.04 NÃO suporta proto3 optional sem a flag --experimental_allow_proto3_optional. Já corrigido no build-proto.mjs mas NÃO reverter.",
+      "fs.copyFileSync() dentro do WSL escrevendo para /mnt/c/ (NTFS) pode dar EPERM. Já corrigido com safeCopy no esbuild.mjs mas NÃO reverter.",
+      "chmod NÃO funciona em /mnt/c/ dentro do WSL por padrão. NÃO usar em scripts.",
+      "O comando 'node' NÃO está no PATH padrão do WSL quando executado via subshell de scripts. Sempre carregar nvm antes.",
+      "O FireworksProvider estava sem import no ApiOptions.tsx. Já corrigido — se novos providers forem adicionados ao JSX, SEMPRE verificar se o import existe."
+    ]
+  }
+}
