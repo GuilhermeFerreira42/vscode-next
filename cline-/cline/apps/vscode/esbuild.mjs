@@ -93,8 +93,26 @@ const copyWasmFiles = {
 			const sourceDir = path.join(__dirname, "node_modules", "web-tree-sitter")
 			const targetDir = path.join(__dirname, destDir)
 
+			// Safe copy helper to avoid WSL -> NTFS copyFileSync EPERM issues
+			const safeCopy = (src, dest) => {
+				try {
+					if (fs.existsSync(dest)) {
+						fs.unlinkSync(dest)
+					}
+					fs.writeFileSync(dest, fs.readFileSync(src))
+				} catch (e) {
+					console.warn(`[copy-wasm] Warning: Failed to copy ${src} to ${dest} natively:`, e.message)
+					// Fallback to copyFileSync just in case
+					try {
+						fs.copyFileSync(src, dest)
+					} catch (e2) {
+						console.error(`[copy-wasm] Error: Native copy failed too:`, e2.message)
+					}
+				}
+			}
+
 			// Copy tree-sitter.wasm
-			fs.copyFileSync(path.join(sourceDir, "tree-sitter.wasm"), path.join(targetDir, "tree-sitter.wasm"))
+			safeCopy(path.join(sourceDir, "tree-sitter.wasm"), path.join(targetDir, "tree-sitter.wasm"))
 
 			// Copy language-specific WASM files
 			const languageWasmDir = path.join(__dirname, "node_modules", "tree-sitter-wasms", "out")
@@ -117,7 +135,7 @@ const copyWasmFiles = {
 
 			languages.forEach((lang) => {
 				const filename = `tree-sitter-${lang}.wasm`
-				fs.copyFileSync(path.join(languageWasmDir, filename), path.join(targetDir, filename))
+				safeCopy(path.join(languageWasmDir, filename), path.join(targetDir, filename))
 			})
 		})
 	},

@@ -2,7 +2,6 @@
 
 import chalk from "chalk"
 import { execFileSync, execSync } from "child_process"
-import fsSync from "fs"
 import * as fs from "fs/promises"
 import { globby } from "globby"
 import { createRequire } from "module"
@@ -80,6 +79,7 @@ async function compileProtos() {
 		`--proto_path=${PROTO_DIR}`,
 		`--descriptor_set_out=${descriptorFile}`,
 		"--include_imports",
+		"--experimental_allow_proto3_optional",
 		...protoFiles,
 	]
 	try {
@@ -101,6 +101,7 @@ function tsProtoc(outDir, protoFiles, protoOptions) {
 		`--plugin=protoc-gen-ts_proto=${TS_PROTO_PLUGIN}`,
 		`--ts_proto_out=${outDir}`,
 		`--ts_proto_opt=${protoOptions.join(",")}`,
+		"--experimental_allow_proto3_optional",
 		...protoFiles,
 	]
 	try {

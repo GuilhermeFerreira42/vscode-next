@@ -2,6 +2,7 @@ import { ClineStorageMessage } from "../../../shared/messages/content"
 import { ApiHandler } from "../index"
 import { GreenForgeAgents } from "./AgentFactory"
 import { ARBITER_SYSTEM_PROMPT, CRITIC_SYSTEM_PROMPT, PROPOSER_SYSTEM_PROMPT } from "./RolePrompts"
+import { Logger } from "../../../shared/services/Logger"
 
 export interface DebateSessionResult {
 	rounds: DebateRoundResult[]
@@ -40,7 +41,7 @@ export async function runAgent(
 		const jsonString = jsonMatch ? jsonMatch[1] : fullText
 		return JSON.parse(jsonString)
 	} catch (e) {
-		console.error(`Failed to parse ${agentName} output as JSON:`, fullText)
+		Logger.error(`Failed to parse ${agentName} output as JSON:`, fullText)
 		return { raw: fullText }
 	}
 }

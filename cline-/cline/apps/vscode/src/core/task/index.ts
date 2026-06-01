@@ -3846,7 +3846,7 @@ export class Task {
 			}
 			await this.say("gf_convergence" as any, JSON.stringify({ filesChanged: (generatedCode.files || []).length }))
 		} catch (e) {
-			console.error("Failed to write files:", e)
+			Logger.error("Failed to write files:", e)
 		}
 
 		return true // Terminate loop
