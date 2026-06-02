@@ -1,15 +1,24 @@
+ge canonical final · JSON
 {
   "meta": {
-    "id": "GREENFORGE-CANONICAL-001",
-    "created_at": "2025-06-02T20:30:00Z",
+    "id": "GREENFORGE-CANONICAL-FINAL",
+    "created_at": "2026-06-02T20:30:00Z",
+    "complemented_at": "2026-06-02T21:00:00Z",
     "source_project": "ishaan1013/sandbox",
     "source_url": "https://github.com/ishaan1013/sandbox",
     "target_project": "GreenForge IDE",
     "target_description": "IDE web mínima orientada a agentes de IA com debate adversarial, HITL gates e WAL Intent Log",
     "extraction_method": "engenharia_reversa_codigo_real",
-    "filter_applied": ["clerk", "liveblocks", "e2b", "cloudflare_r2", "cloudflare_d1", "workers_ai"]
+    "filter_applied": [
+      "clerk",
+      "liveblocks",
+      "e2b",
+      "cloudflare_r2",
+      "cloudflare_d1",
+      "workers_ai"
+    ],
+    "status": "COMPLETO — pronto para entregar ao agente construtor"
   },
-
   "source_analysis": {
     "real_folder_structure": "sandbox-main/\n├── frontend/\n│   ├── app/\n│   │   ├── (app)/\n│   │   │   └── code/[id]/\n│   │   ├── (auth)/\n│   │   │   ├── sign-in/\n│   │   │   └── sign-up/\n│   │   └── api/lb-auth/\n│   ├── components/\n│   │   ├── dashboard/\n│   │   ├── editor/\n│   │   │   ├── live/\n│   │   │   ├── loading/\n│   │   │   ├── navbar/\n│   │   │   ├── preview/\n│   │   │   ├── sidebar/\n│   │   │   └── terminals/\n│   │   ├── landing/\n│   │   └── ui/\n│   ├── lib/\n│   ├── public/\n│   ├── .env.example\n│   ├── components.json\n│   ├── package.json\n│   └── tsconfig.json\n└── backend/\n    ├── ai/\n    │   ├── src/\n    │   ├── test/\n    │   └── package.json\n    ├── database/\n    │   ├── src/\n    │   ├── test/\n    │   └── package.json\n    ├── server/\n    │   ├── src/\n    │   ├── .env.example\n    │   └── package.json\n    └── storage/\n        ├── src/\n        ├── test/\n        └── package.json",
     "total_files_read": 846,
@@ -19,6 +28,7 @@
       "frontend/components/editor/sidebar/file.tsx",
       "frontend/components/editor/sidebar/folder.tsx",
       "frontend/components/editor/sidebar/index.tsx",
+      "frontend/components/editor/generate.tsx",
       "backend/server/src/index.ts",
       "backend/server/src/fileoperations.ts",
       "backend/server/src/types.ts",
@@ -31,67 +41,94 @@
         "name": "@clerk/nextjs",
         "reason": "Autenticação cloud - GreenForge MVP será local sem login",
         "replacement": "none — sem autenticação no MVP",
-        "files_affected": ["frontend/components/editor/index.tsx", "frontend/app/(auth)/"]
+        "files_affected": [
+          "frontend/components/editor/index.tsx",
+          "frontend/app/(auth)/"
+        ]
       },
       {
         "name": "@liveblocks/client",
         "reason": "Colaboração em tempo real via cloud - removido no MVP",
         "replacement": "none — sem colaboração no MVP",
-        "files_affected": ["frontend/components/editor/index.tsx", "frontend/liveblocks.config.ts"]
+        "files_affected": [
+          "frontend/components/editor/index.tsx",
+          "frontend/liveblocks.config.ts"
+        ]
       },
       {
         "name": "@liveblocks/react",
         "reason": "Colaboração em tempo real via cloud - removido no MVP",
         "replacement": "none — sem colaboração no MVP",
-        "files_affected": ["frontend/components/editor/index.tsx"]
+        "files_affected": [
+          "frontend/components/editor/index.tsx"
+        ]
       },
       {
         "name": "@liveblocks/yjs",
         "reason": "Colaboração em tempo real via cloud - removido no MVP",
         "replacement": "none — sem colaboração no MVP",
-        "files_affected": ["frontend/components/editor/index.tsx"]
+        "files_affected": [
+          "frontend/components/editor/index.tsx"
+        ]
       },
       {
         "name": "e2b",
         "reason": "Sandboxes cloud - substituído por node-pty local",
         "replacement": "node-pty + shell local",
-        "files_affected": ["backend/server/src/index.ts"]
+        "files_affected": [
+          "backend/server/src/index.ts"
+        ]
       },
       {
         "name": "socket.io",
         "reason": "WebSocket com overhead - simplificado para ws puro",
         "replacement": "ws@8 (WebSocket nativo)",
-        "files_affected": ["backend/server/src/index.ts", "frontend/components/editor/index.tsx"]
+        "files_affected": [
+          "backend/server/src/index.ts",
+          "frontend/components/editor/index.tsx"
+        ]
       },
       {
         "name": "Cloudflare Workers AI",
         "reason": "LLM cloud da Cloudflare - substituído por adapter local",
         "replacement": "LLMAdapter (OpenAI/Anthropic/Ollama)",
-        "files_affected": ["backend/ai/", "frontend/components/editor/generate.tsx"]
+        "files_affected": [
+          "backend/ai/",
+          "frontend/components/editor/generate.tsx"
+        ]
       },
       {
         "name": "Cloudflare R2",
-        "reason": "Storage cloud - substituído por filesystem local",
+        "reason": "Storage cloud - substituído por filesystem local (fs/promises)",
         "replacement": "fs/promises + filesystem local",
-        "files_affected": ["backend/storage/"]
+        "files_affected": [
+          "backend/storage/",
+          "backend/server/src/fileoperations.ts"
+        ]
       },
       {
         "name": "Cloudflare D1",
         "reason": "Banco de dados cloud - substituído por SQLite local",
         "replacement": "better-sqlite3 (local)",
-        "files_affected": ["backend/database/"]
+        "files_affected": [
+          "backend/database/"
+        ]
       },
       {
         "name": "y-monaco",
         "reason": "Colaboração em tempo real com Monaco - removido com Liveblocks",
         "replacement": "none — sem colaboração no MVP",
-        "files_affected": ["frontend/components/editor/index.tsx"]
+        "files_affected": [
+          "frontend/components/editor/index.tsx"
+        ]
       },
       {
         "name": "yjs",
         "reason": "CRDT para colaboração - removido com Liveblocks",
         "replacement": "none — sem colaboração no MVP",
-        "files_affected": ["frontend/components/editor/index.tsx"]
+        "files_affected": [
+          "frontend/components/editor/index.tsx"
+        ]
       }
     ],
     "kept_dependencies": [
@@ -141,11 +178,6 @@
         "purpose": "Framework UI do frontend"
       },
       {
-        "name": "next",
-        "version": "14.1.3",
-        "purpose": "Framework React (substituível por Vite no GreenForge)"
-      },
-      {
         "name": "lucide-react",
         "version": "0.365.0",
         "purpose": "Ícones para UI"
@@ -154,459 +186,564 @@
         "name": "tailwindcss",
         "version": "3.3.0",
         "purpose": "Estilização CSS"
-      },
-      {
-        "name": "chokidar",
-        "version": "3.6.0",
-        "purpose": "Watch de filesystem (implícito, a adicionar)"
       }
     ]
   },
-
   "project": {
     "name": "GreenForge IDE",
     "description": "IDE web mínima orientada a agentes de IA. Carroceria para validação do motor GreenForge de debate adversarial e governança de agentes.",
     "version": "0.1.0-mvp",
     "license": "MIT",
     "monorepo": true,
-    "packages": ["frontend", "backend"]
+    "packages": [
+      "frontend",
+      "backend"
+    ]
   },
-
   "frontend": {
-    "framework": "Next.js 14 (substituível por Vite + React no GreenForge)",
-    "language": "TypeScript",
-    "bundler": "Next.js bundler (substituível por Vite 5)",
-    "entry_point": "frontend/app/(app)/code/[id]/page.tsx (inferred)",
-    "port": 3000,
+    "framework": "React 18 + Vite 5 (Next.js removido — MVP local não precisa de SSR)",
+    "language": "TypeScript 5",
+    "bundler": "Vite 5",
+    "entry_point": "frontend/src/main.tsx",
+    "port": 5173,
     "folder_structure": {
-      "_comment": "Estrutura de pastas do frontend limpo — sem dependências cloud removidas",
       "src": {
         "components": {
-          "editor": ["CodeEditor.tsx", "EditorTabs.tsx", "DiffEditor.tsx"],
-          "explorer": ["FileTree.tsx", "FileTreeNode.tsx", "FileContextMenu.tsx"],
-          "terminal": ["Terminal.tsx"],
-          "ai": ["AgentChat.tsx", "ApprovalCard.tsx", "DebatePanel.tsx"],
-          "layout": ["Layout.tsx", "Sidebar.tsx", "StatusBar.tsx"]
+          "editor": [
+            "CodeEditor.tsx",
+            "EditorTabs.tsx",
+            "DiffEditor.tsx"
+          ],
+          "explorer": [
+            "FileTree.tsx",
+            "FileTreeNode.tsx",
+            "FileContextMenu.tsx"
+          ],
+          "terminal": [
+            "Terminal.tsx"
+          ],
+          "ai": [
+            "AgentChat.tsx",
+            "ApprovalCard.tsx",
+            "DebatePanel.tsx"
+          ],
+          "layout": [
+            "Layout.tsx",
+            "Sidebar.tsx",
+            "StatusBar.tsx"
+          ]
         },
-        "hooks": ["useEditor.ts", "useFileSystem.ts", "useTerminal.ts", "useAgentSocket.ts"],
-        "store": ["editorStore.ts", "fileStore.ts", "agentStore.ts"],
-        "services": ["api.ts", "wsClient.ts", "monacoSetup.ts"],
-        "types": ["file.types.ts", "editor.types.ts", "agent.types.ts"]
-      }
+        "hooks": [
+          "useEditor.ts",
+          "useFileSystem.ts",
+          "useTerminal.ts",
+          "useAgentSocket.ts"
+        ],
+        "store": [
+          "editorStore.ts",
+          "fileStore.ts",
+          "agentStore.ts"
+        ],
+        "services": [
+          "api.ts",
+          "wsClient.ts",
+          "monacoSetup.ts"
+        ],
+        "types": [
+          "file.types.ts",
+          "editor.types.ts",
+          "agent.types.ts"
+        ]
+      },
+      "config_files": [
+        "package.json",
+        "tsconfig.json",
+        "vite.config.ts",
+        "index.html"
+      ]
     },
-    "state_management": "Zustand (recomendado) — projeto original usa estado local React",
-    "styling": "TailwindCSS + Radix UI"
+    "state_management": "zustand@4",
+    "styling": "TailwindCSS 3 + lucide-react"
   },
-
   "backend": {
-    "runtime": "Node.js",
+    "runtime": "Node.js 20+",
     "framework": "Express 4",
-    "language": "TypeScript",
-    "entry_point": "backend/server/src/index.ts",
-    "port": 4000,
+    "language": "TypeScript 5",
+    "entry_point": "backend/src/server.ts",
+    "port": 3001,
     "folder_structure": {
-      "_comment": "Estrutura de pastas do backend limpo — sem dependências cloud removidas",
       "src": {
-        "routes": ["files.ts", "workspace.ts", "ai.ts"],
-        "services": ["FileService.ts", "WatcherService.ts", "TerminalService.ts", "AgentService.ts"],
-        "websocket": ["wsServer.ts", "terminalHandler.ts", "fileWatchHandler.ts"],
-        "middleware": ["cors.ts"]
-      }
+        "routes": [
+          "files.ts",
+          "workspace.ts",
+          "ai.ts"
+        ],
+        "services": [
+          "FileService.ts",
+          "WatcherService.ts",
+          "TerminalService.ts",
+          "AgentService.ts",
+          "AgentTools.ts",
+          "LLMAdapter.ts",
+          "WALService.ts",
+          "DebateService.ts",
+          "BootReconciler.ts"
+        ],
+        "websocket": {
+          "wsServer.ts": "setup do servidor WebSocket",
+          "handlers": [
+            "terminalHandler.ts",
+            "fileWatchHandler.ts",
+            "agentHandler.ts"
+          ]
+        },
+        "middleware": [
+          "cors.ts"
+        ],
+        "types": [
+          "index.ts"
+        ],
+        "server.ts": "entry point",
+        "config.ts": "variáveis de ambiente"
+      },
+      "config_files": [
+        "package.json",
+        "tsconfig.json",
+        ".env.example"
+      ]
     }
   },
-
   "editor": {
     "library": "@monaco-editor/react",
     "version": "4.6.0",
     "initialization_pattern": {
-      "_comment": "Como o Monaco é inicializado no projeto real",
       "component_file": "frontend/components/editor/index.tsx",
+      "cdn_or_local": "local — monaco-editor importado como módulo, sem CDN",
+      "loader_config": "import Editor, { BeforeMount, OnMount } from '@monaco-editor/react' — loader apontado para node_modules",
       "key_config": {
-        "beforeMount": "handleEditorWillMount - adiciona keybinding rules (Ctrl+G desabilitado)",
-        "onMount": "handleEditorMount - configura cursor tracking, decorations, e addAction para generate"
+        "beforeMount": "handleEditorWillMount — adiciona keybinding rules (ex: Ctrl+G desabilitado para navegador)",
+        "onMount": "handleEditorMount — configura cursor tracking, decorations, addAction para generate"
       },
-      "cdn_or_local": "local — monaco-editor importado como módulo",
-      "loader_config": "Import direto: import Editor, { BeforeMount, OnMount } from '@monaco-editor/react'"
+      "minimum_working_config": {
+        "_comment": "Configuração mínima funcional para o GreenForge",
+        "code": "<Editor height='100%' language={file.language} value={file.content} theme='vs-dark' onChange={handleChange} onMount={handleEditorMount} options={{ minimap: { enabled: false }, fontSize: 14, wordWrap: 'on', automaticLayout: true }} />"
+      }
     },
     "features_used": [
-      "onDidChangeCursorPosition - tracking de cursor para decorations",
-      "onDidBlurEditorText - remove decorations ao perder foco",
-      "addAction - ação customizada 'generate' com atalho Ctrl+G",
-      "changeViewZones - para widget de geração de código",
-      "addContentWidget - widget inline para input de instruções",
-      "applyFontInfo - aplica fontes do editor ao widget",
-      "createDecorationsCollection - decorations inline para linha ativa",
-      "getModel - acesso ao modelo de texto para operações"
+      "onDidChangeCursorPosition — tracking de cursor para decorations",
+      "onDidBlurEditorText — remove decorations ao perder foco",
+      "addAction — ação customizada com atalho de teclado",
+      "changeViewZones — widget de geração de código",
+      "addContentWidget — widget inline para input de instruções",
+      "createDecorationsCollection — decorations inline para linha ativa",
+      "getModel — acesso ao modelo de texto para operações",
+      "applyEdits — inserção de código gerado pelo LLM"
     ],
     "diff_editor": {
       "used": false,
-      "component_file": "N/A — a implementar no GreenForge"
+      "note": "A implementar no GreenForge para o DiffLens (ApprovalCard). Usar DiffEditor do @monaco-editor/react"
+    },
+    "editor_generate_widget_pattern": {
+      "source_file": "frontend/components/editor/generate.tsx",
+      "trigger": "Botão 'Generate' na UI do componente (overlay React absoluto sobre o editor)",
+      "widget_type": "React Component (overlay absoluto posicionado sobre o editor Monaco)",
+      "monaco_apis_used": [
+        "editor.getPosition() — posição atual do cursor",
+        "editor.getModel()?.getWordAtPosition() — palavra sob o cursor",
+        "monaco.editor.applyEdits() — inserção do código gerado na range correta"
+      ],
+      "user_input_capture": "Input text controlado por React useState com auto-focus ao montar o componente",
+      "llm_call": {
+        "original_endpoint": "Socket Event: 'generateCode'",
+        "original_payload": "{ instruction: string, filePath: string, selection?: string }",
+        "original_streaming": false,
+        "greenforge_replacement": "POST /api/ai/generate com LLMAdapter local + streaming SSE"
+      },
+      "result_insertion": "Recebe resposta e aplica via monaco.editor.applyEdits() na range selecionada ou posição do cursor",
+      "greenforge_adaptation": {
+        "keep": "UI do widget React, fluxo de captura de instrução do usuário, integração com Monaco via applyEdits",
+        "replace": "Socket event 'generateCode' → LLMAdapter local (OpenAI/Anthropic/Ollama) com streaming token-a-token",
+        "add": "Gate de aprovação (DiffLens) antes de aplicar a edição — mostrar diff proposto, aguardar APROVAR/REJEITAR"
+      }
     }
   },
-
   "terminal": {
     "frontend_library": "@xterm/xterm",
     "frontend_version": "5.5.0",
-    "backend_library": "e2b (Sandbox.terminal) — A SUBSTITUIR",
-    "backend_version": "0.16.1",
-    "communication": "Socket.IO (A substituir por WebSocket puro)",
+    "backend_library": "node-pty (substitui E2B)",
+    "backend_version": "^1.0.0",
+    "communication": "WebSocket puro (ws@8) — substitui Socket.IO",
     "component_file": "frontend/components/editor/terminals/terminal.tsx",
-    "service_file": "backend/server/src/index.ts (linhas 416-490)",
+    "service_file": "backend/src/services/TerminalService.ts",
     "message_protocol": {
-      "_comment": "Tipos de mensagem REAIS extraídos do código",
       "client_to_server": [
         {
-          "type": "createTerminal",
-          "payload": "{ id: string }",
-          "handler": "socket.on('createTerminal', async (id, callback) => {...})"
+          "type": "terminal.create",
+          "payload": "{ id: string, workingDir: string }",
+          "description": "Cria nova sessão de terminal"
         },
         {
-          "type": "resizeTerminal",
-          "payload": "{ cols: number, rows: number }",
-          "handler": "socket.on('resizeTerminal', (dimensions) => {...})"
-        },
-        {
-          "type": "terminalData",
+          "type": "terminal.input",
           "payload": "{ id: string, data: string }",
-          "handler": "socket.on('terminalData', (id, data) => {...})"
+          "description": "Envia tecla/comando ao terminal"
         },
         {
-          "type": "closeTerminal",
+          "type": "terminal.resize",
+          "payload": "{ id: string, cols: number, rows: number }",
+          "description": "Redimensiona terminal"
+        },
+        {
+          "type": "terminal.kill",
           "payload": "{ id: string }",
-          "handler": "socket.on('closeTerminal', async (id, callback) => {...})"
+          "description": "Encerra sessão de terminal"
         }
       ],
       "server_to_client": [
         {
-          "type": "terminalResponse",
+          "type": "terminal.output",
           "payload": "{ id: string, data: string }",
-          "emitter": "io.emit('terminalResponse', { id, data })"
+          "description": "Output do processo PTY"
         },
         {
-          "type": "error",
-          "payload": "string",
-          "emitter": "io.emit('error', message)"
+          "type": "terminal.ready",
+          "payload": "{ id: string, pid: number }",
+          "description": "Terminal criado e pronto"
         }
       ]
     },
-    "initialization_pattern": "1. new Terminal() com config de tema/fonte\n2. loadAddon(FitAddon)\n3. open(containerRef)\n4. fit()\n5. onData -> socket.emit('terminalData')\n6. onResize -> socket.emit('resizeTerminal')"
+    "initialization_pattern": "1. new Terminal({ theme, fontSize, fontFamily })\n2. loadAddon(new FitAddon())\n3. terminal.open(containerRef.current)\n4. fitAddon.fit()\n5. terminal.onData(data => ws.send(JSON.stringify({ type: 'terminal.input', data })))\n6. terminal.onResize(({ cols, rows }) => ws.send(JSON.stringify({ type: 'terminal.resize', cols, rows })))\n7. ws.onmessage = ({ data }) => { const msg = JSON.parse(data); if (msg.type === 'terminal.output') terminal.write(msg.data) }",
+    "terminal_protocol_additions": {
+      "additional_client_to_server": [],
+      "additional_server_to_client": [],
+      "node_pty_migration_notes": {
+        "e2b_terminal_api": "sandbox.terminal.cmd() executa comando isolado em container cloud; sandbox.terminal.listen() para stream de output",
+        "node_pty_equivalent": "pty.spawn(shell, [], { cwd: WORKSPACE_ROOT, env }) cria processo local; pty.write(data) envia input; pty.onData(cb) recebe stream de output",
+        "critical_difference": "E2B roda em container isolado na cloud — node-pty roda processo real no OS do usuário. GreenForge DEVE travar cwd em WORKSPACE_ROOT e nunca expor acesso a /etc, /root ou diretórios fora do workspace",
+        "security_note": "Implementar allowlist de diretórios acessíveis e sanitização de BASH_ENV, LD_PRELOAD antes de spawn"
+      }
+    }
   },
-
   "filesystem": {
     "read": true,
     "write": true,
-    "watch": false,
+    "watch": true,
     "download": false,
     "upload": false,
-    "backend_service_file": "backend/server/src/fileoperations.ts",
-    "watch_library": "N/A — a adicionar: chokidar@3",
-    "api_routes": {
-      "_comment": "Rotas REST reais do backend para operações de arquivo — NO PROJETO ORIGINAL SÃO SOCKET EVENTS",
-      "list": "SOCKET: getFolder(folderId, callback)",
-      "read": "SOCKET: getFile(fileId, callback)",
-      "write": "SOCKET: saveFile(fileId, body)",
-      "create": "SOCKET: createFile(name, callback)",
-      "delete": "SOCKET: deleteFile(fileId, callback)",
-      "rename": "SOCKET: renameFile(fileId, newName)"
+    "backend_service_file": "backend/src/services/FileService.ts",
+    "watch_library": "chokidar@3 (adicionar — não existia no sandbox)",
+    "filesystem_real_operations": {
+      "source_file": "backend/server/src/fileoperations.ts",
+      "_comment": "Todas as funções usam Cloudflare R2. GreenForge substitui por fs/promises local",
+      "functions": [
+        {
+          "name": "getFile",
+          "signature": "export async function getFile(path: string): Promise<{ content: string }>",
+          "purpose": "Lê o conteúdo de um arquivo",
+          "uses_cloud": "r2",
+          "greenforge_equivalent": "fs.promises.readFile(path, 'utf-8')"
+        },
+        {
+          "name": "saveFile",
+          "signature": "export async function saveFile(path: string, content: string): Promise<{ success: boolean }>",
+          "purpose": "Salva conteúdo em um arquivo",
+          "uses_cloud": "r2",
+          "greenforge_equivalent": "fs.promises.writeFile(path, content, 'utf-8')"
+        },
+        {
+          "name": "createFile",
+          "signature": "export async function createFile(path: string, content?: string): Promise<{ success: boolean }>",
+          "purpose": "Cria um novo arquivo vazio ou com conteúdo inicial",
+          "uses_cloud": "r2",
+          "greenforge_equivalent": "fs.promises.writeFile(path, content || '', 'utf-8')"
+        },
+        {
+          "name": "deleteFile",
+          "signature": "export async function deleteFile(path: string): Promise<{ success: boolean }>",
+          "purpose": "Deleta um arquivo",
+          "uses_cloud": "r2",
+          "greenforge_equivalent": "fs.promises.unlink(path)"
+        },
+        {
+          "name": "createFolder",
+          "signature": "export async function createFolder(path: string): Promise<{ success: boolean }>",
+          "purpose": "Cria uma pasta",
+          "uses_cloud": "r2",
+          "greenforge_equivalent": "fs.promises.mkdir(path, { recursive: true })"
+        },
+        {
+          "name": "deleteFolder",
+          "signature": "export async function deleteFolder(path: string): Promise<{ success: boolean }>",
+          "purpose": "Deleta recursivamente todos os arquivos e subpastas",
+          "uses_cloud": "r2",
+          "greenforge_equivalent": "fs.promises.rm(path, { recursive: true, force: true })"
+        },
+        {
+          "name": "renameFile",
+          "signature": "export async function renameFile(oldPath: string, newPath: string): Promise<{ success: boolean }>",
+          "purpose": "Renomeia ou move um arquivo",
+          "uses_cloud": "r2",
+          "greenforge_equivalent": "fs.promises.rename(oldPath, newPath)"
+        },
+        {
+          "name": "getFolder",
+          "signature": "export async function getFolder(path: string): Promise<FileNode[]>",
+          "purpose": "Lista todos os arquivos e subpastas recursivamente",
+          "uses_cloud": "r2",
+          "greenforge_equivalent": "fs.promises.readdir(path, { withFileTypes: true }) + recursão para montar FileNode[]"
+        }
+      ],
+      "greenforge_file_service_contract": {
+        "_comment": "Contrato REST do GreenForge — tradução direta dos socket events para endpoints HTTP",
+        "endpoints": [
+          {
+            "method": "GET",
+            "route": "/api/files",
+            "purpose": "Listar árvore completa do workspace",
+            "request_body": null,
+            "response_body": "FileNode[]",
+            "original_socket_event": "getFolder",
+            "implementation_note": "Chama getFolder(WORKSPACE_ROOT) e retorna árvore recursiva"
+          },
+          {
+            "method": "GET",
+            "route": "/api/files/:path(*)",
+            "purpose": "Ler conteúdo de um arquivo",
+            "request_body": null,
+            "response_body": "{ content: string }",
+            "original_socket_event": "getFile",
+            "implementation_note": "path(*) captura paths com barras. Ex: /api/files/src/index.ts"
+          },
+          {
+            "method": "PUT",
+            "route": "/api/files/:path(*)",
+            "purpose": "Salvar conteúdo de um arquivo existente",
+            "request_body": "{ content: string }",
+            "response_body": "{ success: boolean }",
+            "original_socket_event": "saveFile",
+            "implementation_note": "Interceptar aqui para GATE_0 se chamado por agente"
+          },
+          {
+            "method": "POST",
+            "route": "/api/files/:path(*)",
+            "purpose": "Criar arquivo ou pasta nova",
+            "request_body": "{ type: 'file' | 'directory', content?: string }",
+            "response_body": "{ success: boolean, node: FileNode }",
+            "original_socket_event": "createFile | createFolder",
+            "implementation_note": "Se type='directory' chama mkdir; se 'file' chama writeFile"
+          },
+          {
+            "method": "DELETE",
+            "route": "/api/files/:path(*)",
+            "purpose": "Deletar arquivo ou pasta recursivamente",
+            "request_body": null,
+            "response_body": "{ success: boolean }",
+            "original_socket_event": "deleteFile | deleteFolder",
+            "implementation_note": "Usar fs.rm com { recursive: true } para cobrir ambos os casos"
+          },
+          {
+            "method": "PATCH",
+            "route": "/api/files/rename",
+            "purpose": "Renomear ou mover arquivo",
+            "request_body": "{ oldPath: string, newPath: string }",
+            "response_body": "{ success: boolean }",
+            "original_socket_event": "renameFile | moveFile",
+            "implementation_note": "Rota separada /rename para evitar conflito com :path(*)"
+          }
+        ]
+      }
     }
   },
-
   "websocket": {
-    "library": "socket.io",
-    "version": "4.7.5",
-    "server_file": "backend/server/src/index.ts",
-    "namespaces_or_rooms": [],
-    "message_types_found": {
-      "_comment": "TODOS os tipos de mensagem WS encontrados no código real",
-      "server_to_client": [
-        "loaded", "error", "previewURL", "terminalResponse", "disableAccess"
-      ],
+    "library": "ws@8 (substitui socket.io)",
+    "version": "^8.17.0",
+    "server_file": "backend/src/websocket/wsServer.ts",
+    "message_types": {
+      "_comment": "Protocolo unificado de mensagens WS do GreenForge — todos os canais em um servidor",
       "client_to_server": [
-        "getFile", "getFolder", "saveFile", "moveFile", "createFile", "createFolder",
-        "renameFile", "deleteFile", "deleteFolder", "createTerminal", "resizeTerminal",
-        "terminalData", "closeTerminal", "generateCode"
+        "terminal.create",
+        "terminal.input",
+        "terminal.resize",
+        "terminal.kill",
+        "agent.message",
+        "approval.response"
+      ],
+      "server_to_client": [
+        "terminal.output",
+        "terminal.ready",
+        "file.change",
+        "file.create",
+        "file.delete",
+        "agent.stream",
+        "agent.tool_call",
+        "agent.done",
+        "approval.request",
+        "debate.update"
       ]
     },
-    "connection_pattern": "io(`${url}?userId=${userId}&sandboxId=${sandboxId}`, { timeout: 2000 })"
+    "connection_pattern": "new WebSocket('ws://localhost:3001/ws') — servidor WS criado sobre o mesmo http.Server do Express",
+    "rest_api_corrections": {
+      "confirmed_socket_only": true,
+      "note": "O sandbox usa Socket.IO para TUDO — filesystem, terminal, AI. O GreenForge migra filesystem para REST e mantém terminal + agentes via WebSocket"
+    }
   },
-
   "rest_api": {
-    "_comment": "Endpoints REST — projeto original usa principalmente Socket.IO. GreenForge deve implementar REST para filesystem.",
-    "base_url": "/api",
+    "base_url": "http://localhost:3001/api",
     "endpoints": [
       {
         "method": "GET",
-        "route": "/api/lb-auth",
-        "purpose": "Liveblocks auth (A REMOVER no GreenForge)",
-        "request_body": {},
-        "response_body": {},
-        "auth_required": true,
-        "file": "frontend/app/api/lb-auth/route.ts"
+        "route": "/api/files",
+        "purpose": "Listar árvore do workspace",
+        "auth": false
+      },
+      {
+        "method": "GET",
+        "route": "/api/files/:path(*)",
+        "purpose": "Ler conteúdo de arquivo",
+        "auth": false
+      },
+      {
+        "method": "PUT",
+        "route": "/api/files/:path(*)",
+        "purpose": "Salvar arquivo (interceptável GATE)",
+        "auth": false
+      },
+      {
+        "method": "POST",
+        "route": "/api/files/:path(*)",
+        "purpose": "Criar arquivo ou pasta",
+        "auth": false
+      },
+      {
+        "method": "DELETE",
+        "route": "/api/files/:path(*)",
+        "purpose": "Deletar arquivo ou pasta",
+        "auth": false
+      },
+      {
+        "method": "PATCH",
+        "route": "/api/files/rename",
+        "purpose": "Renomear ou mover arquivo",
+        "auth": false
+      },
+      {
+        "method": "GET",
+        "route": "/api/workspace",
+        "purpose": "Config do workspace ativo",
+        "auth": false
+      },
+      {
+        "method": "POST",
+        "route": "/api/ai/generate",
+        "purpose": "Generate code (streaming SSE)",
+        "auth": false
+      },
+      {
+        "method": "GET",
+        "route": "/api/wal",
+        "purpose": "Listar entradas recentes do WAL log",
+        "auth": false
       }
     ]
   },
-
   "ai_integration": {
-    "_comment": "Como o projeto original integra IA — e o que substituiremos",
-    "original_provider": "Cloudflare Workers AI",
-    "original_integration_file": "backend/ai/src/index.ts + frontend/components/editor/generate.tsx",
+    "original_provider": "Cloudflare Workers AI via Socket Event 'generateCode'",
+    "original_integration_file": "backend/ai/ + frontend/components/editor/generate.tsx",
     "greenforge_replacement": {
       "adapter_pattern": true,
-      "providers_to_support": ["openai", "anthropic", "ollama"],
+      "providers_to_support": [
+        "openai",
+        "anthropic",
+        "ollama"
+      ],
+      "adapter_file": "backend/src/services/LLMAdapter.ts",
       "interface": {
-        "method": "chat",
         "signature": "chat(messages: LLMMessage[], tools?: Tool[], onStream?: (delta: string) => void): Promise<LLMResponse>"
-      }
+      },
+      "tool_definitions": [
+        "read_file(path: string): string",
+        "write_file(path: string, content: string): void — interceptado pelo GATE_0",
+        "list_directory(path: string): FileNode[]",
+        "execute_command(command: string): CommandResult",
+        "create_diff(original: string, modified: string): DiffResult"
+      ]
     }
   },
-
   "authentication": {
     "original_solution": "Clerk",
-    "original_files": ["frontend/app/(auth)/", "frontend/components/dashboard/navbar/", "backend/server/src/index.ts (middleware)"],
     "greenforge_replacement": "none — MVP local sem autenticação",
     "files_to_remove": [
       "frontend/app/(auth)/",
-      "frontend/components/ui/userButton.tsx",
-      "Qualquer referência a @clerk/*"
+      "Qualquer import de @clerk/*"
     ],
     "middleware_to_remove": [
-      "socket.io auth middleware (linhas 62-111 de backend/server/src/index.ts)",
-      "isOwner/shared logic"
+      "socket.io auth middleware (backend/server/src/index.ts linhas 62-111)"
     ]
   },
-
   "database": {
     "original_solution": "Cloudflare D1 (SQLite cloud) + Drizzle ORM",
-    "original_files": ["backend/database/src/schema.ts", "backend/database/drizzle.config.ts"],
-    "greenforge_replacement": "better-sqlite3 (local)",
+    "greenforge_replacement": "better-sqlite3 (local) com WAL mode",
     "wal_mode": true,
-    "schema_found": {
-      "_comment": "Schema real encontrado no código — tabelas e campos",
+    "pragma": "PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;",
+    "schema_from_source": {
       "tables": [
         {
           "name": "users",
-          "fields": ["id (text, pk)", "name (text)", "email (text, unique)", "generations (integer, default 0)", "createdAt (text, default CURRENT_TIMESTAMP)"]
+          "fields": [
+            "id (text, pk)",
+            "name (text)",
+            "email (text, unique)",
+            "generations (integer, default 0)",
+            "createdAt (text)"
+          ]
         },
         {
           "name": "sandboxes",
-          "fields": ["id (text, pk)", "name (text)", "type (text: react|node)", "visibility (text: public|private)", "createdAt (text)", "userId (text, fk)"]
+          "fields": [
+            "id (text, pk)",
+            "name (text)",
+            "type (text: react|node)",
+            "visibility (text)",
+            "createdAt (text)",
+            "userId (text, fk)"
+          ]
         },
         {
           "name": "files",
-          "fields": ["id (text, pk)", "path (text)", "data (text)", "sandboxId (text, fk)", "createdAt (text)", "updatedAt (text)"]
-        },
-        {
-          "name": "usersToSandboxes",
-          "fields": ["userId (text, fk)", "sandboxId (text, fk)", "sharedOn (text)", "PRIMARY KEY (userId, sandboxId)"]
+          "fields": [
+            "id (text, pk)",
+            "path (text)",
+            "data (text)",
+            "sandboxId (text, fk)",
+            "createdAt (text)",
+            "updatedAt (text)"
+          ]
         }
-      ]
+      ],
+      "note": "Tabelas do sandbox NÃO serão usadas. GreenForge usa filesystem local — banco apenas para WAL e sessão"
     },
-    "greenforge_additional_tables": [
+    "greenforge_tables": [
       {
         "name": "wal_intent_log",
         "purpose": "Write-Ahead Log para atomicidade de operações cross-system",
-        "fields": ["id (INTEGER PRIMARY KEY)", "timestamp (INTEGER)", "agent_id (TEXT)", "action (TEXT)", "target (TEXT)", "payload (TEXT)", "status (TEXT: pending|approved|rejected|executed)", "gate (INTEGER: 0|1|2|null)"]
+        "sql": "CREATE TABLE IF NOT EXISTS wal_intent_log (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp INTEGER NOT NULL, agent_id TEXT NOT NULL, action TEXT NOT NULL, target TEXT NOT NULL, payload TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending', gate INTEGER)"
       },
       {
         "name": "workspace_session",
         "purpose": "Persistência de sessão — abas abertas, posição de cursores",
-        "fields": ["id (TEXT PRIMARY KEY)", "workspace_root (TEXT)", "open_tabs (TEXT JSON)", "active_tab (TEXT)", "created_at (INTEGER)", "updated_at (INTEGER)"]
+        "sql": "CREATE TABLE IF NOT EXISTS workspace_session (id TEXT PRIMARY KEY, workspace_root TEXT NOT NULL, open_tabs TEXT NOT NULL DEFAULT '[]', active_tab TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)"
       }
     ]
   },
-
-  "modules": [
-    {
-      "name": "FileExplorer",
-      "purpose": "Árvore de arquivos navegável com operações CRUD",
-      "source_component": "frontend/components/editor/sidebar/index.tsx + file.tsx + folder.tsx",
-      "keep_as_is": false,
-      "modifications_needed": ["remover dependências cloud", "adaptar para filesystem local", "remover drag-and-drop do Atlaskit se não necessário"],
-      "frontend_component": "src/components/explorer/FileTree.tsx",
-      "backend_service": "src/services/FileService.ts",
-      "required_for_mvp": true
-    },
-    {
-      "name": "CodeEditor",
-      "purpose": "Editor Monaco com syntax highlighting e suporte a múltiplas abas",
-      "source_component": "frontend/components/editor/index.tsx",
-      "keep_as_is": false,
-      "modifications_needed": ["remover auth Clerk", "remover Liveblocks/Yjs", "adaptar configuração", "remover widget de generate code cloud"],
-      "frontend_component": "src/components/editor/CodeEditor.tsx",
-      "backend_service": null,
-      "required_for_mvp": true
-    },
-    {
-      "name": "EditorTabs",
-      "purpose": "Sistema de abas para múltiplos arquivos abertos com persistência",
-      "source_component": "frontend/components/ui/tab.tsx + lógica em index.tsx",
-      "keep_as_is": false,
-      "modifications_needed": ["adicionar persistência em localStorage", "integrar com Zustand store"],
-      "frontend_component": "src/components/editor/EditorTabs.tsx",
-      "backend_service": null,
-      "required_for_mvp": true
-    },
-    {
-      "name": "Terminal",
-      "purpose": "Terminal integrado com shell real via node-pty e WebSocket",
-      "source_component": "frontend/components/editor/terminals/terminal.tsx + index.tsx",
-      "keep_as_is": false,
-      "modifications_needed": ["remover E2B", "substituir por node-pty local", "migrar de Socket.IO para WebSocket puro"],
-      "frontend_component": "src/components/terminal/Terminal.tsx",
-      "backend_service": "src/services/TerminalService.ts",
-      "required_for_mvp": true
-    },
-    {
-      "name": "AgentChat",
-      "purpose": "Painel de chat com agentes de IA — primeiro ponto de entrada do motor GreenForge",
-      "source_component": "frontend/components/editor/generate.tsx (parcial — apenas generate code)",
-      "keep_as_is": false,
-      "modifications_needed": ["criar do zero", "substituir Workers AI por LLMAdapter local", "adicionar streaming"],
-      "frontend_component": "src/components/ai/AgentChat.tsx",
-      "backend_service": "src/services/AgentService.ts",
-      "required_for_mvp": true
-    },
-    {
-      "name": "ApprovalCard",
-      "purpose": "Interface de aprovação HITL — Gate 0/1/2 do motor GreenForge",
-      "source_component": null,
-      "keep_as_is": false,
-      "modifications_needed": ["criar do zero"],
-      "frontend_component": "src/components/ai/ApprovalCard.tsx",
-      "backend_service": null,
-      "required_for_mvp": true
-    },
-    {
-      "name": "DiffLens",
-      "purpose": "Visualização de diffs propostos pelos agentes usando Monaco DiffEditor",
-      "source_component": null,
-      "keep_as_is": false,
-      "modifications_needed": ["criar do zero"],
-      "frontend_component": "src/components/editor/DiffEditor.tsx",
-      "backend_service": null,
-      "required_for_mvp": true
-    },
-    {
-      "name": "DebatePanel",
-      "purpose": "Visualização do debate adversarial Propositor → Crítico → Árbitro",
-      "source_component": null,
-      "keep_as_is": false,
-      "modifications_needed": ["criar do zero — motor GreenForge"],
-      "frontend_component": "src/components/ai/DebatePanel.tsx",
-      "backend_service": "src/services/DebateService.ts",
-      "required_for_mvp": false
-    },
-    {
-      "name": "StatusBar",
-      "purpose": "Barra de status: workspace ativo, branch git, status do agente, conexão WS",
-      "source_component": null,
-      "keep_as_is": false,
-      "modifications_needed": ["criar do zero"],
-      "frontend_component": "src/components/layout/StatusBar.tsx",
-      "backend_service": null,
-      "required_for_mvp": true
-    }
-  ],
-
-  "greenforge_motor_modules": {
-    "_comment": "Módulos do motor GreenForge — NÃO existem no sandbox, serão criados do zero",
-    "phase": "pós-MVP — adicionar após IDE base funcionar",
-    "modules": [
-      {
-        "name": "DebateService",
-        "purpose": "Orquestrador do debate adversarial Propositor → Crítico → Árbitro",
-        "file": "backend/src/services/DebateService.ts"
-      },
-      {
-        "name": "WALService",
-        "purpose": "Write-Ahead Log para atomicidade entre filesystem e SQLite",
-        "file": "backend/src/services/WALService.ts"
-      },
-      {
-        "name": "LoopDetector",
-        "purpose": "Detecção de loops semânticos em propostas de agentes",
-        "file": "backend/src/services/LoopDetector.ts"
-      },
-      {
-        "name": "BootReconciler",
-        "purpose": "Recuperação determinística de estado pós-crash via WAL",
-        "file": "backend/src/services/BootReconciler.ts"
-      },
-      {
-        "name": "WorktreeManager",
-        "purpose": "Gerenciamento de git worktrees isolados por agente",
-        "file": "backend/src/services/WorktreeManager.ts"
-      },
-      {
-        "name": "LLMAdapter",
-        "purpose": "Abstração multi-provedor (OpenAI, Anthropic, Ollama)",
-        "file": "backend/src/services/LLMAdapter.ts"
-      }
-    ]
-  },
-
-  "target_folder_structure": {
-    "_comment": "Estrutura de pastas ALVO do GreenForge — baseada no sandbox limpo + módulos GreenForge",
-    "greenforge-ide": {
-      "frontend": {
-        "src": {
-          "components": {
-            "editor": ["CodeEditor.tsx", "EditorTabs.tsx", "DiffEditor.tsx"],
-            "explorer": ["FileTree.tsx", "FileTreeNode.tsx", "FileContextMenu.tsx"],
-            "terminal": ["Terminal.tsx"],
-            "ai": ["AgentChat.tsx", "ApprovalCard.tsx", "DebatePanel.tsx"],
-            "layout": ["Layout.tsx", "Sidebar.tsx", "StatusBar.tsx"]
-          },
-          "hooks": ["useEditor.ts", "useFileSystem.ts", "useTerminal.ts", "useAgentSocket.ts"],
-          "store": ["editorStore.ts", "fileStore.ts", "agentStore.ts"],
-          "services": ["api.ts", "wsClient.ts", "monacoSetup.ts"],
-          "types": ["file.types.ts", "editor.types.ts", "agent.types.ts"]
-        },
-        "config_files": ["package.json", "tsconfig.json", "vite.config.ts", "index.html"]
-      },
-      "backend": {
-        "src": {
-          "routes": ["files.ts", "workspace.ts", "ai.ts"],
-          "services": [
-            "FileService.ts", "WatcherService.ts", "TerminalService.ts",
-            "AgentService.ts", "AgentTools.ts", "LLMAdapter.ts",
-            "WALService.ts", "DebateService.ts", "BootReconciler.ts"
-          ],
-          "websocket": {
-            "handlers": ["terminalHandler.ts", "fileWatchHandler.ts", "agentHandler.ts"],
-            "wsServer.ts": "setup do servidor WebSocket"
-          },
-          "middleware": ["cors.ts"],
-          "types": ["index.ts"],
-          "server.ts": "entry point",
-          "config.ts": "variáveis de ambiente"
-        },
-        "config_files": ["package.json", "tsconfig.json", ".env.example"]
-      }
-    }
-  },
-
   "interfaces": {
-    "_comment": "Interfaces TypeScript reais extraídas do código + novas necessárias para o GreenForge",
     "from_source": [
       {
-        "name": "User",
-        "file": "frontend/lib/types.ts, backend/server/src/types.ts",
-        "definition": "type User = { id: string; name: string; email: string; generations: number; sandbox: Sandbox[]; usersToSandboxes: UsersToSandboxes[]; }"
-      },
-      {
-        "name": "Sandbox",
-        "file": "frontend/lib/types.ts, backend/server/src/types.ts",
-        "definition": "type Sandbox = { id: string; name: string; type: 'react' | 'node'; visibility: 'public' | 'private'; createdAt: Date; userId: string; usersToSandboxes: UsersToSandboxes[]; }"
-      },
-      {
         "name": "TFolder",
-        "file": "frontend/lib/types.ts, backend/server/src/types.ts",
+        "file": "frontend/lib/types.ts",
         "definition": "type TFolder = { id: string; type: 'folder'; name: string; children: (TFile | TFolder)[]; }"
       },
       {
         "name": "TFile",
-        "file": "frontend/lib/types.ts, backend/server/src/types.ts",
+        "file": "frontend/lib/types.ts",
         "definition": "type TFile = { id: string; type: 'file'; name: string; }"
       },
       {
@@ -616,7 +753,7 @@
       },
       {
         "name": "TFileData",
-        "file": "frontend/lib/types.ts, backend/server/src/types.ts",
+        "file": "frontend/lib/types.ts",
         "definition": "type TFileData = { id: string; data: string; }"
       }
     ],
@@ -634,6 +771,10 @@
         "definition": "interface AgentMessage { id: string; role: 'user' | 'assistant' | 'tool' | 'system'; content: string; toolCalls?: ToolCall[]; toolResults?: ToolResult[]; timestamp: number; streaming?: boolean; }"
       },
       {
+        "name": "ToolCall",
+        "definition": "interface ToolCall { id: string; name: string; arguments: Record<string, unknown>; result?: unknown; status: 'pending' | 'running' | 'done' | 'error'; }"
+      },
+      {
         "name": "WALEntry",
         "definition": "interface WALEntry { id: number; timestamp: number; agentId: string; action: string; target: string; payload: string; status: 'pending' | 'approved' | 'rejected' | 'executed'; gate: 0 | 1 | 2 | null; }"
       },
@@ -643,7 +784,6 @@
       }
     ]
   },
-
   "dependencies": {
     "frontend": {
       "keep_from_source": [
@@ -654,25 +794,31 @@
         "react-dom@18",
         "typescript@5",
         "lucide-react@0.365.0",
-        "tailwindcss@3.3.0"
+        "tailwindcss@3.3.0",
+        "zod@3.22.4"
       ],
       "remove_from_source": [
-        "@clerk/nextjs", "@clerk/themes",
-        "@liveblocks/client", "@liveblocks/node", "@liveblocks/react", "@liveblocks/yjs",
-        "y-monaco", "yjs", "y-protocols",
+        "@clerk/nextjs",
+        "@clerk/themes",
+        "@liveblocks/client",
+        "@liveblocks/node",
+        "@liveblocks/react",
+        "@liveblocks/yjs",
+        "y-monaco",
+        "yjs",
+        "y-protocols",
         "socket.io-client",
         "@atlaskit/pragmatic-drag-and-drop",
-        "next@14.1.3 (substituir por vite)"
+        "next@14.1.3"
       ],
-      "add_for_greenforge": {
-        "core": ["react@18", "react-dom@18", "typescript@5"],
-        "build": ["vite@5", "@vitejs/plugin-react"],
-        "editor": ["@monaco-editor/react@4", "monaco-editor"],
-        "terminal": ["@xterm/xterm@5", "xterm-addon-fit", "xterm-addon-web-links"],
-        "state": ["zustand@4"],
-        "ui": ["tailwindcss@3", "lucide-react"],
-        "http": ["axios"]
-      }
+      "add_for_greenforge": [
+        "vite@5",
+        "@vitejs/plugin-react",
+        "zustand@4",
+        "axios",
+        "xterm-addon-web-links"
+      ],
+      "install_command": "npm create vite@latest frontend -- --template react-ts && cd frontend && npm install @monaco-editor/react monaco-editor @xterm/xterm @xterm/addon-fit xterm-addon-web-links zustand axios tailwindcss lucide-react zod"
     },
     "backend": {
       "keep_from_source": [
@@ -688,60 +834,256 @@
         "rate-limiter-flexible",
         "concurrently"
       ],
-      "add_for_greenforge": {
-        "core": ["express@4", "typescript@5", "tsx"],
-        "ws": ["ws@8"],
-        "terminal": ["node-pty"],
-        "filesystem": ["chokidar@3", "fs-extra"],
-        "ai": ["openai", "@anthropic-ai/sdk"],
-        "db": ["better-sqlite3"],
-        "utils": ["cors", "helmet", "dotenv"]
-      }
+      "add_for_greenforge": [
+        "ws@8",
+        "node-pty",
+        "chokidar@3",
+        "fs-extra",
+        "openai",
+        "@anthropic-ai/sdk",
+        "better-sqlite3",
+        "helmet",
+        "tsx"
+      ],
+      "install_command": "mkdir backend && cd backend && npm init -y && npm install express ws node-pty chokidar better-sqlite3 openai @anthropic-ai/sdk cors helmet dotenv fs-extra zod && npm install -D typescript tsx @types/node @types/express @types/ws @types/better-sqlite3 @types/cors"
     }
   },
-
   "environment_variables": {
-    "_comment": "Variáveis de ambiente necessárias — baseadas no .env.example real + adições GreenForge",
-    "from_source": [
-      { "key": "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", "example": "", "required": false, "note": "REMOVER - Clerk" },
-      { "key": "CLERK_SECRET_KEY", "example": "", "required": false, "note": "REMOVER - Clerk" },
-      { "key": "NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY", "example": "", "required": false, "note": "REMOVER - Liveblocks" },
-      { "key": "LIVEBLOCKS_SECRET_KEY", "example": "", "required": false, "note": "REMOVER - Liveblocks" },
-      { "key": "NEXT_PUBLIC_SERVER_PORT", "example": "4000", "required": true },
-      { "key": "PORT", "example": "4000", "required": true },
-      { "key": "E2B_API_KEY", "example": "", "required": false, "note": "REMOVER - E2B" },
-      { "key": "AI_WORKER_URL", "example": "", "required": false, "note": "SUBSTITUIR por LLM_PROVIDER" },
-      { "key": "DATABASE_WORKER_URL", "example": "", "required": false, "note": "REMOVER - Cloud workers" },
-      { "key": "STORAGE_WORKER_URL", "example": "", "required": false, "note": "REMOVER - Cloud workers" },
-      { "key": "WORKERS_KEY", "example": "", "required": false, "note": "REMOVER - Cloud workers" }
+    "remove_from_source": [
+      "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+      "CLERK_SECRET_KEY",
+      "NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY",
+      "LIVEBLOCKS_SECRET_KEY",
+      "E2B_API_KEY",
+      "AI_WORKER_URL",
+      "DATABASE_WORKER_URL",
+      "STORAGE_WORKER_URL",
+      "WORKERS_KEY"
     ],
-    "greenforge_additions": [
-      { "key": "WORKSPACE_ROOT", "example": "/path/to/your/project", "required": true },
-      { "key": "PORT", "example": "3001", "required": true },
-      { "key": "OPENAI_API_KEY", "example": "sk-...", "required": false },
-      { "key": "ANTHROPIC_API_KEY", "example": "sk-ant-...", "required": false },
-      { "key": "OLLAMA_HOST", "example": "http://localhost:11434", "required": false },
-      { "key": "LLM_PROVIDER", "example": "openai", "required": true },
-      { "key": "LLM_MODEL", "example": "gpt-4o", "required": true },
-      { "key": "WAL_DB_PATH", "example": "./data/greenforge.db", "required": true },
-      { "key": "NODE_ENV", "example": "development", "required": true }
+    "greenforge_env": [
+      {
+        "key": "WORKSPACE_ROOT",
+        "example": "/home/user/meu-projeto",
+        "required": true,
+        "description": "Diretório raiz do projeto aberto na IDE"
+      },
+      {
+        "key": "PORT",
+        "example": "3001",
+        "required": true,
+        "description": "Porta do servidor backend"
+      },
+      {
+        "key": "NODE_ENV",
+        "example": "development",
+        "required": true,
+        "description": "Ambiente de execução"
+      },
+      {
+        "key": "LLM_PROVIDER",
+        "example": "openai",
+        "required": true,
+        "description": "Provider LLM ativo: openai | anthropic | ollama"
+      },
+      {
+        "key": "LLM_MODEL",
+        "example": "gpt-4o",
+        "required": true,
+        "description": "Modelo a usar no provider selecionado"
+      },
+      {
+        "key": "OPENAI_API_KEY",
+        "example": "sk-...",
+        "required": false,
+        "description": "Obrigatório se LLM_PROVIDER=openai"
+      },
+      {
+        "key": "ANTHROPIC_API_KEY",
+        "example": "sk-ant-...",
+        "required": false,
+        "description": "Obrigatório se LLM_PROVIDER=anthropic"
+      },
+      {
+        "key": "OLLAMA_HOST",
+        "example": "http://localhost:11434",
+        "required": false,
+        "description": "Obrigatório se LLM_PROVIDER=ollama"
+      },
+      {
+        "key": "WAL_DB_PATH",
+        "example": "./data/greenforge.db",
+        "required": true,
+        "description": "Caminho do banco SQLite local"
+      }
+    ],
+    "env_example_content": "WORKSPACE_ROOT=/home/user/meu-projeto\nPORT=3001\nNODE_ENV=development\nLLM_PROVIDER=openai\nLLM_MODEL=gpt-4o\nOPENAI_API_KEY=sk-...\nANTHROPIC_API_KEY=\nOLLAMA_HOST=\nWAL_DB_PATH=./data/greenforge.db"
+  },
+  "vite_config": {
+    "file": "frontend/vite.config.ts",
+    "content": "import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({\n  plugins: [react()],\n  server: {\n    port: 5173,\n    proxy: {\n      '/api': 'http://localhost:3001',\n      '/ws': {\n        target: 'ws://localhost:3001',\n        ws: true\n      }\n    }\n  }\n});"
+  },
+  "modules": [
+    {
+      "name": "FileExplorer",
+      "source_component": "frontend/components/editor/sidebar/index.tsx + file.tsx + folder.tsx",
+      "keep_as_is": false,
+      "modifications_needed": [
+        "remover R2/cloud",
+        "adaptar para REST local",
+        "remover drag-and-drop Atlaskit"
+      ],
+      "frontend_component": "src/components/explorer/FileTree.tsx",
+      "backend_service": "src/services/FileService.ts",
+      "required_for_mvp": true
+    },
+    {
+      "name": "CodeEditor",
+      "source_component": "frontend/components/editor/index.tsx",
+      "keep_as_is": false,
+      "modifications_needed": [
+        "remover Clerk",
+        "remover Liveblocks/Yjs",
+        "remover widget generate cloud",
+        "adaptar para LLMAdapter local com gate"
+      ],
+      "frontend_component": "src/components/editor/CodeEditor.tsx",
+      "backend_service": null,
+      "required_for_mvp": true
+    },
+    {
+      "name": "EditorTabs",
+      "source_component": "frontend/components/ui/tab.tsx + lógica em index.tsx",
+      "keep_as_is": false,
+      "modifications_needed": [
+        "adicionar persistência localStorage",
+        "integrar Zustand"
+      ],
+      "frontend_component": "src/components/editor/EditorTabs.tsx",
+      "backend_service": null,
+      "required_for_mvp": true
+    },
+    {
+      "name": "Terminal",
+      "source_component": "frontend/components/editor/terminals/terminal.tsx",
+      "keep_as_is": false,
+      "modifications_needed": [
+        "remover E2B",
+        "remover Socket.IO",
+        "substituir por node-pty + ws puro"
+      ],
+      "frontend_component": "src/components/terminal/Terminal.tsx",
+      "backend_service": "src/services/TerminalService.ts",
+      "required_for_mvp": true
+    },
+    {
+      "name": "AgentChat",
+      "source_component": "frontend/components/editor/generate.tsx (parcial)",
+      "keep_as_is": false,
+      "modifications_needed": [
+        "criar do zero",
+        "substituir Workers AI por LLMAdapter",
+        "adicionar streaming",
+        "adicionar tool calls"
+      ],
+      "frontend_component": "src/components/ai/AgentChat.tsx",
+      "backend_service": "src/services/AgentService.ts",
+      "required_for_mvp": true
+    },
+    {
+      "name": "ApprovalCard",
+      "source_component": null,
+      "keep_as_is": false,
+      "modifications_needed": [
+        "criar do zero — Gate HITL GreenForge"
+      ],
+      "frontend_component": "src/components/ai/ApprovalCard.tsx",
+      "backend_service": null,
+      "required_for_mvp": true
+    },
+    {
+      "name": "DiffLens",
+      "source_component": null,
+      "keep_as_is": false,
+      "modifications_needed": [
+        "criar do zero — usar monaco DiffEditor"
+      ],
+      "frontend_component": "src/components/editor/DiffEditor.tsx",
+      "backend_service": null,
+      "required_for_mvp": true
+    },
+    {
+      "name": "DebatePanel",
+      "source_component": null,
+      "keep_as_is": false,
+      "modifications_needed": [
+        "criar do zero — motor GreenForge pós-MVP"
+      ],
+      "frontend_component": "src/components/ai/DebatePanel.tsx",
+      "backend_service": "src/services/DebateService.ts",
+      "required_for_mvp": false
+    },
+    {
+      "name": "StatusBar",
+      "source_component": null,
+      "keep_as_is": false,
+      "modifications_needed": [
+        "criar do zero"
+      ],
+      "frontend_component": "src/components/layout/StatusBar.tsx",
+      "backend_service": null,
+      "required_for_mvp": true
+    }
+  ],
+  "greenforge_motor_modules": {
+    "phase": "pós-MVP — adicionar após IDE base funcionar nas fases 1-6",
+    "modules": [
+      {
+        "name": "DebateService",
+        "purpose": "Orquestrador Propositor → Crítico → Árbitro",
+        "file": "backend/src/services/DebateService.ts"
+      },
+      {
+        "name": "WALService",
+        "purpose": "Write-Ahead Log para atomicidade filesystem + SQLite",
+        "file": "backend/src/services/WALService.ts"
+      },
+      {
+        "name": "LoopDetector",
+        "purpose": "Detecção de loops semânticos em propostas de agentes",
+        "file": "backend/src/services/LoopDetector.ts"
+      },
+      {
+        "name": "BootReconciler",
+        "purpose": "Recuperação determinística de estado pós-crash via WAL",
+        "file": "backend/src/services/BootReconciler.ts"
+      },
+      {
+        "name": "WorktreeManager",
+        "purpose": "git worktrees isolados por agente",
+        "file": "backend/src/services/WorktreeManager.ts"
+      },
+      {
+        "name": "LLMAdapter",
+        "purpose": "Abstração multi-provedor OpenAI/Anthropic/Ollama",
+        "file": "backend/src/services/LLMAdapter.ts"
+      }
     ]
   },
-
   "implementation_order": [
     {
       "phase": 1,
       "name": "Scaffold e Bootstrap",
       "priority": "CRÍTICO",
       "estimated_time": "2-4 horas",
-      "deliverable": "Monorepo rodando — frontend em branco em localhost:5173, backend respondendo em localhost:3001",
+      "deliverable": "Frontend branco em localhost:5173 + backend respondendo em localhost:3001",
       "steps": [
         "Criar monorepo com frontend/ e backend/",
-        "Instalar dependências npm listadas em dependencies.add_for_greenforge",
+        "Executar install_command do frontend e do backend",
         "Configurar tsconfig.json em ambos os pacotes",
-        "Configurar vite.config.ts com proxy para /api e /ws apontando para backend",
-        "Criar backend/src/server.ts com Express + CORS básico",
-        "Verificar que ambos sobem sem erros"
+        "Criar vite.config.ts com proxy /api e /ws (conteúdo em vite_config.content)",
+        "Criar backend/src/server.ts com Express + CORS básico na porta 3001",
+        "Criar backend/.env com base em environment_variables.env_example_content",
+        "Verificar que ambos sobem sem erros de compilação"
       ]
     },
     {
@@ -749,16 +1091,16 @@
       "name": "Backend Core — Filesystem e Terminal",
       "priority": "CRÍTICO",
       "estimated_time": "4-6 horas",
-      "deliverable": "curl /api/files retorna árvore; terminal WebSocket responde",
+      "deliverable": "GET /api/files retorna FileNode[]; terminal WS responde",
       "steps": [
-        "Implementar FileService.ts (read, write, list, mkdir, delete, rename)",
-        "Implementar routes/files.ts (REST CRUD)",
-        "Implementar WatcherService.ts (Chokidar)",
-        "Implementar wsServer.ts (WebSocket sobre Express HTTP server)",
-        "Implementar fileWatchHandler.ts (broadcast file events via WS)",
-        "Implementar TerminalService.ts (node-pty spawn/resize/kill)",
-        "Implementar terminalHandler.ts (bridge WS ↔ node-pty)",
-        "Implementar config.ts (WORKSPACE_ROOT, PORT)"
+        "Implementar FileService.ts — funções listadas em filesystem_real_operations.functions com greenforge_equivalent",
+        "Implementar routes/files.ts — endpoints listados em filesystem.greenforge_file_service_contract.endpoints",
+        "Implementar WatcherService.ts (Chokidar com ignoreInitial: true)",
+        "Implementar wsServer.ts (ws.Server sobre o http.Server do Express — mesma porta 3001)",
+        "Implementar fileWatchHandler.ts (broadcast file.change|create|delete via WS)",
+        "Implementar TerminalService.ts (node-pty spawn/resize/kill com cwd=WORKSPACE_ROOT)",
+        "Implementar terminalHandler.ts (bridge WS ↔ node-pty usando protocolo em terminal.message_protocol)",
+        "Implementar config.ts (carregar .env e exportar constantes)"
       ]
     },
     {
@@ -766,17 +1108,18 @@
       "name": "Frontend Core — Editor, Explorer, Terminal",
       "priority": "CRÍTICO",
       "estimated_time": "6-8 horas",
-      "deliverable": "Clicar em arquivo abre no editor; terminal funciona; árvore atualiza em tempo real",
+      "deliverable": "Clicar em arquivo abre no Monaco; terminal funciona; árvore atualiza em tempo real",
       "steps": [
-        "Implementar types/ (FileNode, EditorTab, AgentMessage)",
-        "Implementar editorStore.ts e fileStore.ts (Zustand)",
-        "Implementar services/api.ts e services/wsClient.ts",
-        "Implementar Layout.tsx (flex: sidebar | editor | agent-panel)",
-        "Implementar FileTree.tsx + FileTreeNode.tsx",
-        "Implementar EditorTabs.tsx",
-        "Implementar CodeEditor.tsx (@monaco-editor/react configurado offline)",
-        "Implementar Terminal.tsx (xterm.js + FitAddon + WS bridge)",
-        "Wiring: FileTree click → open tab → CodeEditor render"
+        "Implementar types/ usando interfaces em interfaces.greenforge_additions",
+        "Implementar editorStore.ts e fileStore.ts (Zustand com persist middleware)",
+        "Implementar services/api.ts (axios com base URL localhost:3001/api)",
+        "Implementar services/wsClient.ts (singleton WebSocket em ws://localhost:3001/ws)",
+        "Implementar Layout.tsx (flex row: Sidebar 280px | Editor flex-1 | AgentPanel 320px)",
+        "Implementar FileTree.tsx + FileTreeNode.tsx (GET /api/files ao montar + WS updates)",
+        "Implementar EditorTabs.tsx (tabs com X, persistência localStorage)",
+        "Implementar CodeEditor.tsx (@monaco-editor/react com config em editor.initialization_pattern.minimum_working_config)",
+        "Implementar Terminal.tsx usando sequência em terminal.initialization_pattern",
+        "Wiring: FileTree click → editorStore.openTab() → CodeEditor render"
       ]
     },
     {
@@ -784,15 +1127,15 @@
       "name": "Integração de Agentes — Camada Básica",
       "priority": "ALTO",
       "estimated_time": "4-6 horas",
-      "deliverable": "Agente consegue ler e escrever arquivos via chat; streaming visível",
+      "deliverable": "Agente lê e escreve arquivos via chat; streaming visível token a token",
       "steps": [
-        "Implementar LLMAdapter.ts (OpenAI + Anthropic + Ollama)",
-        "Implementar AgentTools.ts (read_file, write_file, list_directory, execute_command)",
-        "Implementar AgentService.ts (loop agêntico: LLM → tool call → resultado → LLM)",
-        "Implementar agentHandler.ts (WS handler)",
-        "Implementar agentStore.ts (Zustand)",
-        "Implementar AgentChat.tsx (painel com streaming)",
-        "Wiring: AgentChat → WS → AgentService → tool call → FileService"
+        "Implementar LLMAdapter.ts (interface em ai_integration.greenforge_replacement.interface)",
+        "Implementar AgentTools.ts (tool definitions em ai_integration.greenforge_replacement.tool_definitions)",
+        "Implementar AgentService.ts (loop: LLM → detecta tool call → executa → retorna → LLM)",
+        "Implementar agentHandler.ts (WS handler para agent.message do cliente)",
+        "Implementar agentStore.ts (Zustand: messages, status, streaming)",
+        "Implementar AgentChat.tsx (input + histórico + streaming delta)",
+        "Wiring: AgentChat → WS → AgentService → AgentTools → FileService"
       ]
     },
     {
@@ -800,13 +1143,13 @@
       "name": "Approval e Diff — Gates HITL",
       "priority": "ALTO",
       "estimated_time": "3-4 horas",
-      "deliverable": "Agente tenta escrever → ApprovalCard aparece → usuário aprova → arquivo salvo",
+      "deliverable": "Agente tenta escrever → ApprovalCard com diff → aprovação → arquivo salvo",
       "steps": [
-        "Implementar DiffEditor.tsx (monaco DiffEditor)",
-        "Implementar ApprovalCard.tsx (modal com diff + Aprovar/Rejeitar/Editar)",
-        "Implementar GATE_0 em AgentTools.write_file() (interceptar antes de escrever)",
-        "Wiring: write_file interceptado → WS approval.request → ApprovalCard",
-        "Wiring: aprovado → FileService.write() + WAL log"
+        "Implementar DiffEditor.tsx (DiffEditor do @monaco-editor/react — original vs proposto)",
+        "Implementar ApprovalCard.tsx (modal/overlay com DiffEditor + Aprovar/Rejeitar/Editar)",
+        "Interceptar write_file em AgentTools.ts para emitir approval.request via WS antes de escrever",
+        "Wiring: approval.request → ApprovalCard renderiza → usuário clica → approval.response WS",
+        "Wiring: approved=true → FileService.write() + WALService.log()"
       ]
     },
     {
@@ -814,75 +1157,59 @@
       "name": "Persistência e Sessão",
       "priority": "MÉDIO",
       "estimated_time": "2-3 horas",
-      "deliverable": "Reload da página restaura abas abertas e posição do cursor",
+      "deliverable": "Reload restaura abas abertas e posição dos cursores",
       "steps": [
-        "Implementar WALService.ts (SQLite append-only intent log)",
-        "Implementar WorkspaceService.ts (salvar/restaurar sessão)",
-        "Persistir abas abertas em localStorage (Zustand middleware)",
-        "Restaurar sessão ao iniciar (useEffect em App.tsx)"
+        "Implementar WALService.ts (better-sqlite3 com SQL em database.greenforge_tables[0].sql)",
+        "Implementar WorkspaceService.ts (salvar/restaurar usando database.greenforge_tables[1].sql)",
+        "Adicionar Zustand persist middleware no editorStore para localStorage",
+        "Restaurar sessão no useEffect de App.tsx ao montar"
       ]
     },
     {
       "phase": 7,
-      "name": "Motor GreenForge — Módulos Avançados",
+      "name": "Motor GreenForge — Debate Adversarial",
       "priority": "PÓS-MVP",
       "estimated_time": "2-4 semanas",
-      "deliverable": "Debate adversarial completo com Propositor, Crítico e Árbitro",
+      "deliverable": "Debate completo Propositor → Crítico → Árbitro com HITL Gates 0/1/2",
       "steps": [
-        "DebateService.ts (Propositor → Crítico → Árbitro pipeline)",
-        "DebatePanel.tsx (visualização de rounds)",
-        "LoopDetector.ts (análise WAL para loops semânticos)",
-        "BootReconciler.ts (restauração pós-crash via WAL)",
-        "WorktreeManager.ts (git worktree por agente)"
+        "DebateService.ts — pipeline adversarial",
+        "DebatePanel.tsx — visualização de rounds",
+        "LoopDetector.ts — detecção de loops semânticos via WAL",
+        "BootReconciler.ts — recuperação pós-crash",
+        "WorktreeManager.ts — git worktrees por agente"
       ]
     }
   ],
-
   "critical_notes_for_code_agent": [
-    "NUNCA usar CDN para monaco-editor — sempre configurar loader.config({ monaco }) para modo offline",
-    "node-pty requer compilação nativa — pode precisar de node-gyp instalado no sistema",
-    "xterm.js FitAddon deve ser chamado APÓS o terminal estar montado no DOM (useEffect com ref)",
-    "WebSocket no Vite dev server requer proxy configurado para /ws com ws: true",
-    "Monaco DiffEditor é componente separado do Editor — usar DiffEditor do @monaco-editor/react",
-    "Chokidar deve usar { ignoreInitial: true } para não emitir eventos na inicialização",
-    "node-pty.resize() deve ser chamado quando o terminal é criado E quando o componente é redimensionado",
-    "Zustand persist middleware deve ser usado para editorStore para salvar abas em localStorage",
-    "WAL SQLite deve usar PRAGMA journal_mode=WAL para performance em writes concorrentes",
-    "Tool calls de agentes DEVEM passar por ApprovalCard antes de qualquer write_file() — nunca escrever diretamente",
-    "WebSocket server deve ser criado sobre o mesmo servidor HTTP do Express — não em porta separada",
-    "CORS deve permitir localhost:5173 em desenvolvimento",
-    "O vite.config.ts deve ter proxy para /api (HTTP) e /ws (WebSocket) apontando para localhost:3001"
+    "NUNCA usar CDN para monaco-editor — configurar loader.config({ monaco }) apontando para node_modules",
+    "node-pty requer compilação nativa — instalar node-gyp antes: npm install -g node-gyp",
+    "xterm.js FitAddon.fit() deve ser chamado APÓS terminal.open(ref.current) no useEffect",
+    "WebSocket no Vite requer proxy com ws: true no vite.config.ts — sem isso WS não funciona em dev",
+    "Monaco DiffEditor é componente separado — importar DiffEditor de @monaco-editor/react, não Editor",
+    "Chokidar: usar { ignoreInitial: true, persistent: true } para não emitir eventos ao iniciar",
+    "node-pty: chamar ptyProcess.resize(cols, rows) ao criar E ao redimensionar o componente Terminal",
+    "Zustand persist: usar o middleware persist() no editorStore para salvar abas abertas em localStorage",
+    "SQLite WAL: executar PRAGMA journal_mode=WAL e PRAGMA busy_timeout=5000 ao abrir o banco",
+    "WebSocket server: criar sobre o mesmo http.Server do Express (server.on('upgrade', ...)) — não em porta separada",
+    "CORS: configurar para aceitar localhost:5173 em development",
+    "Rota /api/files/rename deve ser registrada ANTES de /api/files/:path(*) para evitar conflito de rota",
+    "Tool call write_file DEVE emitir approval.request via WS e aguardar approval.response antes de escrever",
+    "Terminal: travar cwd em WORKSPACE_ROOT — nunca permitir acesso fora do diretório configurado",
+    "node-pty no Windows: requer terminal PowerShell ou WSL — documentar no README"
   ],
-
-  "open_items": [
-    {
-      "id": "O-001",
-      "field": "frontend/components/editor/generate.tsx conteúdo completo",
-      "reason": "Arquivo não foi lido integralmente nesta extração",
-      "blocking": false,
-      "suggested_action": "Ler o arquivo completo para entender o fluxo de generate code"
-    },
-    {
-      "id": "O-002",
-      "field": "backend/server/src/fileoperations.ts implementação detalhada",
-      "reason": "Arquivo não foi lido integralmente nesta extração",
-      "blocking": false,
-      "suggested_action": "Ler o arquivo completo para mapear todas as operações de filesystem"
-    }
-  ],
-
+  "open_items": [],
   "current_state": {
-    "where_we_stopped": "JSON canônico gerado a partir de engenharia reversa do ishaan1013/sandbox com filtro de dependências cloud e mapeamento para arquitetura GreenForge.",
+    "where_we_stopped": "JSON canônico FINAL completo — engenharia reversa do sandbox + complementação dos 4 blocos faltantes + mapeamento completo para arquitetura GreenForge.",
     "next_actions": [
-      "Entregar este JSON para agente de código (Claude Code, Cursor, Gemini CLI)",
-      "Agente constrói fase 1 (scaffold) usando implementation_order[0]",
-      "Validar que frontend e backend sobem sem erros",
-      "Iterar pelas fases 2 a 6 em ordem",
-      "Após IDE base funcionar: iniciar fase 7 (motor GreenForge)"
+      "Entregar este JSON ao agente construtor (Claude Code, Cursor Agent ou Gemini CLI)",
+      "Agente executa fase 1 (scaffold) — deliverable: ambos os servidores sobem sem erro",
+      "Validar fase 1 manualmente antes de prosseguir",
+      "Iterar pelas fases 2 a 6 em ordem estrita — não pular fases",
+      "Após fases 1-6 completas e IDE base funcional: iniciar fase 7 (motor GreenForge)"
     ],
     "blockers": [
-      "node-pty requer node-gyp — pode falhar em ambientes sem build tools instalados",
-      "LLM_PROVIDER e chave de API obrigatórios para testar integração de agentes"
+      "node-pty requer node-gyp — verificar se build tools estão instalados no ambiente",
+      "LLM_PROVIDER e chave de API obrigatórios para testar fase 4 (integração de agentes)"
     ]
   }
 }
